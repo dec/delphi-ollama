@@ -55,6 +55,7 @@ type
     EvalCount: Int64;
     EvalDuration: Int64;
     DoneReason: string;
+    Streamed: Boolean;
     AsJSON: TJSONValue;
   end;
 

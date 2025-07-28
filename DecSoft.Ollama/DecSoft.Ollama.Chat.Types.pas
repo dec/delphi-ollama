@@ -58,7 +58,9 @@ type
     EvalCount: Int64;
     EvalDuration: Int64;
     DoneReason: string;
+    Streamed: Boolean;
     Message: TResponseMessage;
+    AsJSON: TJSONValue;
   end;
 
   TChatMessageRole = (cmSystem, cmUser, cmAssistant, cmTool);

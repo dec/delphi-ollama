@@ -72,7 +72,8 @@ begin
   ResponseMemo.Lines.Add('');
   ResponseMemo.Lines.Add(Format('User: %s', [PromptMemo.Text]));
   ResponseMemo.Lines.Add('');
-  ResponseMemo.Lines.Add('Assistant: ');
+  ResponseMemo.Lines.Add('Assistant:');
+  ResponseMemo.Text := Trim(ResponseMemo.Text);
 
   CancelButton.Enabled := True;
   ChatButton.Enabled := False;
@@ -101,7 +102,7 @@ begin
         begin
           Application.ProcessMessages();
 
-          ResponseMemo.Text := Trim(ResponseMemo.Text) +' '+ Result.Message.Content;
+          ResponseMemo.Text := ResponseMemo.Text + Result.Message.Content;
         end,
 
         procedure (const Error: string)

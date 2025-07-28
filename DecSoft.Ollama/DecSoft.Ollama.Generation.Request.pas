@@ -115,14 +115,13 @@ begin
     begin
 
       ResponseResult.AsJSON := ResponseJSON;
+      ResponseResult.Streamed := FStreamed;
       ResponseResult.Done := ResponseJSON.GetValue<Boolean>('done');
       ResponseResult.Model := ResponseJSON.GetValue<string>('model');
       ResponseResult.Response := ResponseJSON.GetValue<string>('response');
       ResponseResult.CreatedAt := ResponseJSON.GetValue<string>('created_at');
 
-      FCompleteResponse.WriteString(ResponseResult.Response);
-
-      if FStreamed and not ResponseResult.Done then
+      if FStreamed then
       begin
         if Assigned(FGenerationlResponseProc) then
           FGenerationlResponseProc(ResponseResult, FStopped);
@@ -134,6 +133,7 @@ begin
         if ResponseResult.Done and Assigned(FGenerationlResponseProc) then
         begin
 
+          FCompleteResponse.WriteString(ResponseResult.Response);
           FCompleteResponse.Position := 0;
 
           with ResponseResult do

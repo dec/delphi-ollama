@@ -115,6 +115,8 @@ begin
 
       with ResponseResult do
       begin
+        AsJSON := ResponseJSON;
+        Streamed := FStreamed;
         Done := ResponseJSON.GetValue<Boolean>('done');
         Model := ResponseJSON.GetValue<string>('model');
         Message.Role := ResponseJSON.GetValue<string>('message.role');
@@ -122,9 +124,7 @@ begin
         CreatedAt := ResponseJSON.GetValue<string>('created_at');
       end;
 
-      FCompleteResponse.WriteString(ResponseResult.Message.Content);
-
-      if FStreamed and not ResponseResult.Done then
+      if FStreamed then
       begin
         if Assigned(FChatResponseProc) then
           FChatResponseProc(ResponseResult, FStopped);
@@ -136,6 +136,7 @@ begin
         if ResponseResult.Done and Assigned(FChatResponseProc) then
         begin
 
+          FCompleteResponse.WriteString(ResponseResult.Message.Content);
           FCompleteResponse.Position := 0;
 
           with ResponseResult do
