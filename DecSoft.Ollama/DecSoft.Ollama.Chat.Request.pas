@@ -97,12 +97,7 @@ var
   ResponseResult: TChatResponseResult;
 begin
 
-  if FStopped then
-  begin
-    AAbort := True;
-    FPartialResponse.Clear();
-    Exit;
-  end;
+  AAbort := FStopped;
 
   if Trim(FPartialResponse.DataString) = '' then
     Exit;

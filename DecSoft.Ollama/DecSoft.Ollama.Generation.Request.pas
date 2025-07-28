@@ -58,8 +58,6 @@ type
 implementation
 
 uses
-  DIALOGS,
-
   DecSoft.Ollama.Params.Constants;
 
 { TGenerationRequest }
@@ -98,12 +96,7 @@ var
   ResponseResult: TGenerationResponseResult;
 begin
 
-  if FStopped then
-  begin
-    AAbort := True;
-    FPartialResponse.Clear();
-    Exit;
-  end;
+  AAbort := FStopped;
 
   if Trim(FPartialResponse.DataString) = '' then
     Exit;
