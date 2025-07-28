@@ -66,7 +66,7 @@ object MainForm: TMainForm
       Height = 21
       Anchors = [akTop, akRight]
       TabOrder = 1
-      Text = 'gemma3:4b'
+      Text = 'gemma3'
     end
     object ChatButton: TButton
       Left = 670

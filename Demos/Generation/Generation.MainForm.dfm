@@ -23,8 +23,6 @@ object MainForm: TMainForm
     Height = 156
     Align = alBottom
     TabOrder = 0
-    ExplicitTop = 424
-    ExplicitWidth = 966
     DesignSize = (
       1004
       156)
@@ -60,7 +58,6 @@ object MainForm: TMainForm
       ParentFont = False
       ScrollBars = ssVertical
       TabOrder = 0
-      ExplicitWidth = 593
     end
     object ModelEdit: TEdit
       Left = 670
@@ -69,8 +66,7 @@ object MainForm: TMainForm
       Height = 21
       Anchors = [akTop, akRight]
       TabOrder = 1
-      Text = 'gemma3:4b'
-      ExplicitLeft = 632
+      Text = 'gemma3'
     end
     object GenerateButton: TButton
       Left = 670
@@ -81,7 +77,6 @@ object MainForm: TMainForm
       Caption = 'Generate'
       TabOrder = 2
       OnClick = GenerateButtonClick
-      ExplicitLeft = 632
     end
     object CancelButton: TButton
       Left = 772
@@ -93,7 +88,6 @@ object MainForm: TMainForm
       Enabled = False
       TabOrder = 3
       OnClick = CancelButtonClick
-      ExplicitLeft = 734
     end
     object StreamedCheckBox: TCheckBox
       Left = 870
@@ -105,7 +99,6 @@ object MainForm: TMainForm
       Checked = True
       State = cbChecked
       TabOrder = 4
-      ExplicitLeft = 832
     end
     object StatusBar: TStatusBar
       Left = 1
@@ -113,7 +106,6 @@ object MainForm: TMainForm
       Width = 1002
       Height = 19
       Panels = <>
-      ExplicitWidth = 964
     end
   end
   object ResponseMemo: TMemo
@@ -133,7 +125,5 @@ object MainForm: TMainForm
     ReadOnly = True
     ScrollBars = ssVertical
     TabOrder = 1
-    ExplicitWidth = 966
-    ExplicitHeight = 424
   end
 end

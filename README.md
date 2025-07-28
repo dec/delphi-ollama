@@ -26,8 +26,8 @@ What more I needed?
 
 You need to [download Ollama for Windows](https://ollama.com/download/windows),
 install it, pull some models and run it. The demos works by default with the
-"gemma3:4b" model, but, allows to change (just by providing the model name in
-a TEdit control) it if you want to try any other model.
+"gemma3" model, but, allows to change (just by providing the model name in a
+TEdit control) it if you want to try any other model.
 
 Note there is a "GenerationVision" demo which is intended to be used with a model
 who have the "vision" capability. The "gemma3" model have this capability. Anyway,
