@@ -135,10 +135,13 @@ begin
   JSONRequestValue := TJSONObject.ParseJSONValue(JSONRequest.DataString);
   FStreamed := JSONRequestValue.GetValue<Boolean>('stream');
 
+  HttpClient.OnReceiveData := ReceiveDataEvent;
+
   try
+
+    HttpClient.Post(ApiMethodUrl, JSONRequest, FPartialResponse, Headers);
+
     try
-      HttpClient.OnReceiveData := ReceiveDataEvent;
-      HttpClient.Post(ApiMethodUrl, JSONRequest, FPartialResponse, Headers);
 
       if (FPartialResponse.DataString <> '') and not FStopped then
       begin
@@ -157,7 +160,10 @@ begin
     except
       on E: Exception do
       begin
-        raise E;
+        if Assigned(FErrorResponseProc) then
+          FErrorResponseProc(E.Message)
+        else
+          raise;
       end;
     end;
 
