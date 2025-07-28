@@ -30,7 +30,10 @@ unit DecSoft.Ollama.Params.Constants;
 interface
 
 uses
-  DecSoft.Ollama.Params.Types;
+  DecSoft.Ollama.Chat.Types,
+  DecSoft.Ollama.Params.Types,
+  DecSoft.Ollama.Response.Types,
+  DecSoft.Ollama.Generation.Types;
 
 const
 
@@ -49,6 +52,24 @@ const
     TopK: 40;
     TopP: 0.9;
     MinP: 0.0;
+  );
+
+  DefaultChatParams: TChatParams = (
+    Model: 'gemma3';
+    Stream: False;
+    KeepAlive: '5m';
+    Messages: [];
+  );
+
+  DefaultGenerationParams: TGenerationParams = (
+    Model: 'gemma3';
+    Prompt: '';
+    Suffix: '';
+    Stream: False;
+    KeepAlive: '5m';
+    Images: [];
+    Format: TResponseFormat(crfText);
+    Context: [];
   );
 
 implementation

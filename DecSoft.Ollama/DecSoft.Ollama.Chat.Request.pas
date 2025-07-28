@@ -66,20 +66,21 @@ procedure TChatRequest.Run(ChatParamsProc: TChatParamsProc;
  ChatPartialResponseProc: TChatResponseProc;
   ErrorResponseProc: TErrorResponseProc);
 var
-  ChatMessages: TChatParams;
+  ChatParams: TChatParams;
   RequestStream: TStringStream;
 begin
 
-  ChatMessages.Options := DefaultOptionsParam;
+  ChatParams := DefaultChatParams;
+  ChatParams.Options := DefaultOptionsParam;
 
   if Assigned(ChatParamsProc) then
-    ChatParamsProc(ChatMessages);
+    ChatParamsProc(ChatParams);
 
   //FErrorResponseProc := ErrorResponseProc;
   FChatResponseProc := ChatPartialResponseProc;
 
   RequestStream := TStringStream.Create(
-   ChatMessages.ToString(), TEncoding.UTF8);
+   ChatParams.ToString(), TEncoding.UTF8);
   try
 
     Self.Post(Format('%schat', [FApiUrl]), RequestStream, Self.ReceiveData);

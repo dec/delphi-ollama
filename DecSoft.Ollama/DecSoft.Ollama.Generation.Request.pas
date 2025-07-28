@@ -72,6 +72,7 @@ var
   GenerationParams: TGenerationParams;
 begin
 
+  GenerationParams := DefaultGenerationParams;
   GenerationParams.Options := DefaultOptionsParam;
 
   if Assigned(GenerationParamsProc) then
