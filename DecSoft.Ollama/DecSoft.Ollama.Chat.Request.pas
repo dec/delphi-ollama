@@ -76,7 +76,7 @@ begin
   if Assigned(ChatParamsProc) then
     ChatParamsProc(ChatParams);
 
-  //FErrorResponseProc := ErrorResponseProc;
+  FErrorResponseProc := ErrorResponseProc;
   FChatResponseProc := ChatPartialResponseProc;
 
   RequestStream := TStringStream.Create(
