@@ -71,6 +71,7 @@ type
     procedure Stop();
   public
     property Stopped: Boolean read FStopped;
+    property ApiUrl: string read FApiUrl write FApiUrl;
   end;
 
 implementation
