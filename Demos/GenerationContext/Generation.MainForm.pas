@@ -95,19 +95,23 @@ begin
 
           FContext := FContext + Result.Context;
 
-          ResponseMemo.Text := ResponseMemo.Text + Result.Response;
+          if Result.Streamed and not Result.Done then
+            ResponseMemo.Text := ResponseMemo.Text + Result.Response;
+
+          if not Result.Streamed and Result.Done then
+            ResponseMemo.Text := ResponseMemo.Text + Result.Response;
         end,
 
         procedure (const Error: string)
         begin
-          ResponseMemo.Text := Format('Error: %s', [Error]);
+          ShowMessage(Format('Error: %s', [Error]));
         end);
 
     except
 
       on E: Exception do
       begin
-        ResponseMemo.Text := Format('Exception: %s', [E.Message]);
+        ShowMessage(Format('Exception: %s', [E.Message]));
       end;
     end;
 

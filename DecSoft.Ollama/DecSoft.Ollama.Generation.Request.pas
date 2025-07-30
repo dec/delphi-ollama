@@ -114,40 +114,38 @@ begin
       ResponseResult.Response := ResponseJSON.GetValue<string>('response');
       ResponseResult.CreatedAt := ResponseJSON.GetValue<string>('created_at');
 
-      if FStreamed then
-      begin
-        if Assigned(FGenerationlResponseProc) then
-          FGenerationlResponseProc(ResponseResult, FStopped);
+      FCompleteResponse.WriteString(ResponseResult.Response);
 
+      if FStreamed and not ResponseResult.Done and
+       Assigned(FGenerationlResponseProc)then
+      begin
+        FGenerationlResponseProc(ResponseResult, FStopped);
         FPartialResponse.Clear();
-      end
-      else
+      end;
+
+      if ResponseResult.Done and Assigned(FGenerationlResponseProc) then
       begin
-        if ResponseResult.Done and Assigned(FGenerationlResponseProc) then
+
+        FCompleteResponse.Position := 0;
+
+        with ResponseResult do
         begin
+          Response := ResponseResult.Response;
+          Context := ResponseJSON.GetValue<TArray<Int64>>('context');
+          TotalDuration := ResponseJSON.GetValue<Int64>('total_duration');
+          LoadDuration := ResponseJSON.GetValue<Int64>('load_duration');
+          EvalCount := ResponseJSON.GetValue<Int64>('eval_count');
+          EvalDuration := ResponseJSON.GetValue<Int64>('eval_duration');
+          DoneReason := ResponseJSON.GetValue<string>('done_reason');
 
-          FCompleteResponse.WriteString(ResponseResult.Response);
-          FCompleteResponse.Position := 0;
+          PromptEvalCount :=
+            ResponseJSON.GetValue<Int64>('prompt_eval_count');
 
-          with ResponseResult do
-          begin
-            Response := ResponseResult.Response;
-            Context := ResponseJSON.GetValue<TArray<Int64>>('context');
-            TotalDuration := ResponseJSON.GetValue<Int64>('total_duration');
-            LoadDuration := ResponseJSON.GetValue<Int64>('load_duration');
-            EvalCount := ResponseJSON.GetValue<Int64>('eval_count');
-            EvalDuration := ResponseJSON.GetValue<Int64>('eval_duration');
-            DoneReason := ResponseJSON.GetValue<string>('done_reason');
-
-            PromptEvalCount :=
-              ResponseJSON.GetValue<Int64>('prompt_eval_count');
-
-            PromptEvalDuration :=
-              ResponseJSON.GetValue<Int64>('prompt_eval_duration');
-          end;
-
-          FGenerationlResponseProc(ResponseResult, FStopped);
+          PromptEvalDuration :=
+            ResponseJSON.GetValue<Int64>('prompt_eval_duration');
         end;
+
+        FGenerationlResponseProc(ResponseResult, FStopped);
       end;
     end;
 

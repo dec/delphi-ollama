@@ -86,35 +86,39 @@ begin
 
         procedure (var Params: TChatParams)
         var
-          Message: TChatMessage;
+          ChatMessage: TChatMessage;
         begin
           Params.Model := ModelEdit.Text;
           Params.Stream := StreamedCheckBox.Checked;
 
-          Message.Role := cmUser;
-          Message.Content := PromptMemo.Text;
-          Params.AppendMessage(Message);
-
+          ChatMessage.Role := cmUser;
+          ChatMessage.Content := PromptMemo.Text;
           PromptMemo.Clear();
+
+          Params.AppendMessage(ChatMessage);
         end,
 
         procedure (const Result: TChatResponseResult; var Stop: Boolean)
         begin
           Application.ProcessMessages();
 
-          ResponseMemo.Text := ResponseMemo.Text + Result.Message.Content;
+          if Result.Streamed and not Result.Done then
+            ResponseMemo.Text := ResponseMemo.Text + Result.Message.Content;
+
+          if not Result.Streamed and Result.Done then
+            ResponseMemo.Text := ResponseMemo.Text + Result.Message.Content;
         end,
 
         procedure (const Error: string)
         begin
-          ResponseMemo.Text := Format('Error: %s', [Error]);
+          ShowMessage(Format('Error: %s', [Error]));
         end);
 
     except
 
       on E: Exception do
       begin
-        ResponseMemo.Text := Format('Exception: %s', [E.Message]);
+        ShowMessage(Format('Exception: %s', [E.Message]));
       end;
     end;
 

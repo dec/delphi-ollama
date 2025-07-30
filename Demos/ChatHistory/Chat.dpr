@@ -13,7 +13,9 @@ uses
   DecSoft.Ollama.Request in '..\..\DecSoft.Ollama\DecSoft.Ollama.Request.pas',
   DecSoft.Ollama.Response.Types in '..\..\DecSoft.Ollama\DecSoft.Ollama.Response.Types.pas',
   DecSoft.Ollama.Base64.Utils in '..\..\DecSoft.Ollama\DecSoft.Ollama.Base64.Utils.pas',
-  DecSoft.Ollama.Chat.Utils in '..\..\DecSoft.Ollama\DecSoft.Ollama.Chat.Utils.pas';
+  DecSoft.Ollama.Chat.Utils in '..\..\DecSoft.Ollama\DecSoft.Ollama.Chat.Utils.pas',
+  DecSoft.Ollama.UTF8.Utils in '..\..\DecSoft.Ollama\DecSoft.Ollama.UTF8.Utils.pas',
+  DecSoft.Ollama.Chat.History in '..\..\DecSoft.Ollama\DecSoft.Ollama.Chat.History.pas';
 
 {$R *.res}
 

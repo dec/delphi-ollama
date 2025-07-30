@@ -77,6 +77,7 @@ type
 implementation
 
 uses
+  DecSoft.Ollama.UTF8.Utils,
   DecSoft.Ollama.Chat.Request,
   DecSoft.Ollama.Generation.Request;
 
@@ -94,8 +95,8 @@ begin
   FConnectionTimeout := 5;
 
   FHttpClient := THTTPClient.Create();
-  FPartialResponse := TStringStream.Create('', TEncoding.UTF8);
-  FCompleteResponse := TStringStream.Create('', TEncoding.UTF8);
+  FPartialResponse := TStringStream.Create('', TUTF8NotBoundEncoding.Create());
+  FCompleteResponse := TStringStream.Create('', TUTF8NotBoundEncoding.Create());
 end;
 
 destructor TOllamaRequest.Destroy();

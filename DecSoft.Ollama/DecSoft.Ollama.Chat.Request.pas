@@ -57,6 +57,8 @@ type
 implementation
 
 uses
+  DIALOGS,
+
   DecSoft.Ollama.Params.Types,
   DecSoft.Ollama.Params.Constants;
 
@@ -119,40 +121,37 @@ begin
         CreatedAt := ResponseJSON.GetValue<string>('created_at');
       end;
 
-      if FStreamed then
-      begin
-        if Assigned(FChatResponseProc) then
-          FChatResponseProc(ResponseResult, FStopped);
+      FCompleteResponse.WriteString(ResponseResult.Message.Content);
 
+      if FStreamed and not ResponseResult.Done and
+       Assigned(FChatResponseProc)then
+      begin
+        FChatResponseProc(ResponseResult, FStopped);
         FPartialResponse.Clear();
-      end
-      else
+      end;
+
+      if ResponseResult.Done and Assigned(FChatResponseProc) then
       begin
-        if ResponseResult.Done and Assigned(FChatResponseProc) then
+
+        FCompleteResponse.Position := 0;
+
+        with ResponseResult do
         begin
+          Message.Content := FCompleteResponse.DataString;
+          TotalDuration := ResponseJSON.GetValue<Int64>('total_duration');
+          LoadDuration := ResponseJSON.GetValue<Int64>('load_duration');
+          EvalCount := ResponseJSON.GetValue<Int64>('eval_count');
+          EvalDuration := ResponseJSON.GetValue<Int64>('eval_duration');
+          DoneReason := ResponseJSON.GetValue<string>('done_reason');
 
-          FCompleteResponse.WriteString(ResponseResult.Message.Content);
-          FCompleteResponse.Position := 0;
+          PromptEvalCount :=
+            ResponseJSON.GetValue<Int64>('prompt_eval_count');
 
-          with ResponseResult do
-          begin
-            Message.Content := FCompleteResponse.DataString;
-            TotalDuration := ResponseJSON.GetValue<Int64>('total_duration');
-            LoadDuration := ResponseJSON.GetValue<Int64>('load_duration');
-            EvalCount := ResponseJSON.GetValue<Int64>('eval_count');
-            EvalDuration := ResponseJSON.GetValue<Int64>('eval_duration');
-            DoneReason := ResponseJSON.GetValue<string>('done_reason');
-
-            PromptEvalCount :=
-              ResponseJSON.GetValue<Int64>('prompt_eval_count');
-
-            PromptEvalDuration :=
-              ResponseJSON.GetValue<Int64>('prompt_eval_duration');
-          end;
-
-          FChatResponseProc(ResponseResult, FStopped);
+          PromptEvalDuration :=
+            ResponseJSON.GetValue<Int64>('prompt_eval_duration');
         end;
 
+        FChatResponseProc(ResponseResult, FStopped);
       end;
     end;
 

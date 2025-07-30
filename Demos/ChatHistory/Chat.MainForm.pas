@@ -11,7 +11,8 @@ uses
   Vcl.ComCtrls,
 
   DecSoft.Ollama.Chat.Types,
-  DecSoft.Ollama.Chat.Request;
+  DecSoft.Ollama.Chat.Request,
+  DecSoft.Ollama.Chat.History;
 
 type
   TMainForm = class(TForm)
@@ -33,7 +34,7 @@ type
   private
     FFirstRun: Boolean;
     FRequest: TChatRequest;
-    FHistory: TChatHistory;
+    FChatHistory: TChatHistory;
   end;
 
 var
@@ -53,6 +54,7 @@ procedure TMainForm.FormCreate(Sender: TObject);
 begin
   FFirstRun := True;
   FRequest := TChatRequest.Create();
+  FChatHistory := TChatHistory.Create();
 end;
 
 procedure TMainForm.CancelButtonClick(Sender: TObject);
@@ -69,6 +71,7 @@ end;
 procedure TMainForm.FormDestroy(Sender: TObject);
 begin
   FRequest.Free();
+  FChatHistory.Free();
 end;
 
 procedure TMainForm.ChatButtonClick(Sender: TObject);
@@ -96,50 +99,50 @@ begin
 
         procedure (var Params: TChatParams)
         var
-          Message: TChatMessage;
-          FromHistory, ToHistory: TResponseMessage;
+          ChatMessage: TChatMessage;
         begin
           Params.Model := ModelEdit.Text;
           Params.Stream := StreamedCheckBox.Checked;
 
-          for FromHistory in FHistory do
-          begin
-            Message.Role := StringToMessageRole(FromHistory.Role);
-            Message.Content := FromHistory.Content;
-            Params.AppendMessage(Message);
-          end;
-
-          Message.Role := cmUser;
-          Message.Content := PromptMemo.Text;
-          Params.AppendMessage(Message);
-
-          ToHistory.Role := MessageRoleToString(Message.Role);
-          ToHistory.Content := Message.Content;
-          FHistory := FHistory + [ToHistory];
-
+          ChatMessage.Role := cmUser;
+          ChatMessage.Content := PromptMemo.Text;
           PromptMemo.Clear();
+
+          FChatHistory.AddMessage(ChatMessage);
+
+          Params.SetMessages(FChatHistory.GetMessages());
         end,
 
         procedure (const Result: TChatResponseResult; var Stop: Boolean)
+        var
+          ChatMessage: TChatMessage;
         begin
           Application.ProcessMessages();
 
-          if Result.Done then
-            FHistory := FHistory + [Result.Message];
+          if Result.Streamed and not Result.Done then
+            ResponseMemo.Text := ResponseMemo.Text + Result.Message.Content;
 
-          ResponseMemo.Text := Trim(ResponseMemo.Text) + Result.Message.Content;
+          if not Result.Streamed and Result.Done then
+            ResponseMemo.Text := ResponseMemo.Text + Result.Message.Content;
+
+          if Result.Done then
+          begin
+            ChatMessage.Content := Result.Message.Content;
+            ChatMessage.Role := StringToMessageRole(Result.Message.Role);
+            FChatHistory.AddMessage(ChatMessage);
+          end;
         end,
 
         procedure (const Error: string)
         begin
-          ResponseMemo.Text := Format('Error: %s', [Error]);
+          ShowMessage(Format('Error: %s', [Error]));
         end);
 
     except
 
       on E: Exception do
       begin
-        ResponseMemo.Text := Format('Exception: %s', [E.Message]);
+        ShowMessage(Format('Exception: %s', [E.Message]));
       end;
     end;
 

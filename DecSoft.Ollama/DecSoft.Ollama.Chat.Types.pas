@@ -44,8 +44,6 @@ type
     Content: string;
   end;
 
-  TChatHistory = TArray<TResponseMessage>;
-
   TChatResponseResult = record
   public
     Model: string;
@@ -92,6 +90,7 @@ type
     procedure Clear();
     function ToString(): string;
     procedure AppendMessage(const ChatMessage: TChatMessage);
+    procedure SetMessages(const ChatMessages: TArray<TChatMessage>);
   end;
 
   TChatParamsProc = reference to
@@ -171,6 +170,11 @@ end;
 procedure TChatParams.AppendMessage(const ChatMessage: TChatMessage);
 begin
   Self.Messages := Self.Messages + [ChatMessage];
+end;
+
+procedure TChatParams.SetMessages(const ChatMessages: TArray<TChatMessage>);
+begin
+  Self.Messages := ChatMessages;
 end;
 
 procedure TChatParams.Clear();
