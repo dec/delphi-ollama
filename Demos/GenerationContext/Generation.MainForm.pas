@@ -11,7 +11,8 @@ uses
   Vcl.ComCtrls,
 
   DecSoft.Ollama.Generation.Types,
-  DecSoft.Ollama.Generation.Request;
+  DecSoft.Ollama.Generation.Request,
+  DecSoft.Ollama.Generation.Context;
 
 type
   TMainForm = class(TForm)
@@ -48,6 +49,7 @@ uses
 
 procedure TMainForm.FormCreate(Sender: TObject);
 begin
+  FContext := TGenerationContext.Create();
   FRequest := TGenerationRequest.Create();
 end;
 
@@ -64,6 +66,7 @@ end;
 
 procedure TMainForm.FormDestroy(Sender: TObject);
 begin
+  FContext.Free();
   FRequest.Free();
 end;
 
@@ -86,20 +89,23 @@ begin
           Params.Prompt := PromptMemo.Text;
           Params.Stream := StreamedCheckBox.Checked;
 
-          Params.Context := FContext;
+          Params.Context := FContext.GetContext();
         end,
 
         procedure (const Result: TGenerationResponseResult; var Stop: Boolean)
         begin
           Application.ProcessMessages();
 
-          FContext := FContext + Result.Context;
-
           if Result.Streamed and not Result.Done then
             ResponseMemo.Text := ResponseMemo.Text + Result.Response;
 
           if not Result.Streamed and Result.Done then
+          begin
             ResponseMemo.Text := ResponseMemo.Text + Result.Response;
+          end;
+
+          if Result.Done then
+            FContext.AddContext(Result.Context);
         end,
 
         procedure (const Error: string)

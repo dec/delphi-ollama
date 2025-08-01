@@ -39,8 +39,6 @@ uses
 
 type
 
-  TGenerationContext = TArray<Int64>;
-
   TGenerationResponseResult = record
   public
     Model: string;
@@ -49,7 +47,7 @@ type
     CreatedAt: string;
     TotalDuration: Int64;
     LoadDuration: Int64;
-    Context: TGenerationContext;
+    Context: TArray<Int64>;
     PromptEvalCount: Int64;
     PromptEvalDuration: Int64;
     EvalCount: Int64;
@@ -72,7 +70,7 @@ type
     Options: TOptionsParam;
     Images: TArray<TFileName>;
     Format: TResponseFormat;
-    Context: TGenerationContext;
+    Context: TArray<Int64>;
   private
     function ToJSON(): TJSONObject;
   public

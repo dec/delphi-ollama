@@ -25,75 +25,58 @@
  SOFTWARE.
 *)
 
-unit DecSoft.Ollama.Chat.History;
+unit DecSoft.Ollama.Generation.Context;
 
 interface
 
-uses
-  DecSoft.Ollama.Chat.Types,
-  DecSoft.Ollama.Chat.Request;
+type
+  TArray<Int64> = array of Int64;
 
 type
-  TChatHistory = class(TObject)
+  TGenerationContext = class(TObject)
   private
     FAutoTrim: Boolean;
-    FMaxMessages: Integer;
-    FMessages: TArray<TChatMessage>;
+    FMaxContext: Int64;
+    FContext: TArray<Int64>;
   public
     constructor Create(const AutoTrim: Boolean = True;
-     const MaxMessages: Integer = 25); reintroduce;
+     const MaxContext: Int64 = 2000); reintroduce;
   public
-    function GetMessages(): TArray<TChatMessage>;
-    function AddMessage(const ChatMessage: TChatMessage): Integer;
+    function GetContext(): TArray<Int64>;
+    function AddContext(const Context: TArray<Int64>): Int64;
   public
     property AutoTrim: Boolean read FAutoTrim write FAutoTrim;
+    property MaxContext: Int64 read FMaxContext write FMaxContext;
   end;
 
 implementation
 
-{ TChatHistory }
+{ TGenerationContext }
 
-constructor TChatHistory.Create(const AutoTrim:
- Boolean = True; const MaxMessages: Integer = 25);
+constructor TGenerationContext.Create(const AutoTrim:
+ Boolean = True; const MaxContext: Int64 = 2000);
 begin
   inherited Create();
-  FMessages := [];
+  FContext := [];
   FAutoTrim := AutoTrim;
-  FMaxMessages := MaxMessages;
+  FMaxContext := MaxContext;
 end;
 
-function TChatHistory.AddMessage(const ChatMessage: TChatMessage): Integer;
+function TGenerationContext.AddContext(const Context: TArray<Int64>): Int64;
 begin
-  FMessages := FMessages + [ChatMessage];
+  FContext := FContext + Context;
 
-  if FAutoTrim and (Length(FMessages) > FMaxMessages) then
+  if FAutoTrim and (Length(FContext) > FMaxContext) then
   begin
-    Delete(FMessages, 0, FMaxMessages div 2);
+    Delete(FContext, 0, FMaxContext div 2);
   end;
 
-  Result := Length(FMessages);
+  Result := Length(FContext);
 end;
 
-function TChatHistory.GetMessages(): TArray<TChatMessage>;
-var
-  I: Integer;
-  ChatMessage: TChatMessage;
+function TGenerationContext.GetContext(): TArray<Int64>;
 begin
-  Result := [];
-
-  for I := 0 to Length(FMessages) - 1 do
-  begin
-    ChatMessage.Role := FMessages[I].Role;
-    ChatMessage.Content := FMessages[I].Content;
-
-    if (I = Length(FMessages) - 1) then
-    begin
-      if Length(FMessages[I].Images) > 0 then
-        ChatMessage.Images := FMessages[I].Images;
-    end;
-
-    Result := Result + [ChatMessage];
-  end;
+  Result := FContext;
 end;
 
 end.
