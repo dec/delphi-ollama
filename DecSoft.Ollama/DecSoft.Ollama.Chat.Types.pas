@@ -114,8 +114,6 @@ type
 implementation
 
 uses
-  DIALOGS,
-
   DecSoft.Ollama.Chat.Utils,
   DecSoft.Ollama.Base64.Utils;
 
@@ -207,7 +205,6 @@ var
   Options, Params: TJSONObject;
   Messages, Tools, StopSequences: TJSONArray;
 begin
-  Tools := TJSONArray.Create();
   Messages := TJSONArray.Create();
   Params := TJSONObject.Create();
   try
@@ -215,8 +212,7 @@ begin
     with Params do
     begin
       AddPair(TJSONPair.Create('model', Self.Model));
-      AddPair(TJSONPair.Create('stream', TJSONBool.Create(
-       Self.Stream and (Length(Self.Tools) = 0))));
+      AddPair(TJSONPair.Create('stream', TJSONBool.Create(Self.Stream)));
     end;
 
     if Self.KeepAlive <> '' then
@@ -263,6 +259,8 @@ begin
 
     if Length(Self.Tools) > 0 then
     begin
+      Tools := TJSONArray.Create();
+
       for ChatTool in Self.Tools do
       begin
         Tools.AddElement(ChatTool.ToJSON());

@@ -77,8 +77,6 @@ type
 implementation
 
 uses
-  DIALOGS,
-
   DecSoft.Ollama.UTF8.Utils,
   DecSoft.Ollama.Chat.Request,
   DecSoft.Ollama.Generation.Request;

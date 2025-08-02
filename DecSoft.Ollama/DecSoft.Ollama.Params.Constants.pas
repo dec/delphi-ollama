@@ -58,6 +58,7 @@ const
     Model: 'gemma3';
     Stream: False;
     KeepAlive: '5m';
+    Tools: [];
     Messages: [];
   );
 

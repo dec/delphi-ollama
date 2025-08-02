@@ -38,7 +38,6 @@ uses
 type
   TChatRequest = class (TOllamaRequest)
   private
-    FStreamed: Boolean;
     FChatParams: TChatParams;
     FChatResponseProc: TChatResponseProc;
   private
@@ -77,7 +76,7 @@ begin
 
   if Assigned(ChatParamsProc) then
     ChatParamsProc(FChatParams);
-
+  
   FErrorResponseProc := ErrorResponseProc;
   FChatResponseProc := ChatPartialResponseProc;
 
@@ -102,16 +101,16 @@ var
   ToolCallsArray: TJSONArray;
   ToolCall: TResponseToolCall;
   ChatToolParam: TChatToolParameter;
-  ChatToolParamProp: TChatToolParameterProperty;
-  ToolCallArgument: TResponseToolCallArgument;
   ResponseResult: TChatResponseResult;
+  ToolCallArgument: TResponseToolCallArgument;
+  ChatToolParamProp: TChatToolParameterProperty;
 begin
 
   AAbort := FStopped;
 
   if Trim(FPartialResponse.DataString) = '' then
     Exit;
-
+    
   ResponseJSON := TJSONObject.ParseJSONValue(FPartialResponse.DataString);
 
   try
@@ -130,7 +129,7 @@ begin
       end;
 
       FCompleteResponse.WriteString(ResponseResult.Message.Content);
-
+      
       if FStreamed and not ResponseResult.Done and
        Assigned(FChatResponseProc)then
       begin
