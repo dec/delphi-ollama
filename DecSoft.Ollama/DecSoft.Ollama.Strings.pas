@@ -25,47 +25,15 @@
  SOFTWARE.
 *)
 
-unit DecSoft.Ollama.Chat.Utils;
+unit DecSoft.Ollama.Strings;
 
 interface
 
-uses
-  DecSoft.Ollama.Chat.Types;
+const
 
-function MessageRoleToString(const Role: TChatMessageRole): string;
-function StringToMessageRole(const Role: string): TChatMessageRole;
+  FormatMissingFileName = 'Missing file name: %s';
+  UnknowChatMessageRole = 'Unknow chat message role.';
 
 implementation
-
-uses
-  System.SysUtils,
-
-  DecSoft.Ollama.Strings;
-
-function MessageRoleToString(const Role: TChatMessageRole): string;
-begin
-  case Role of
-    cmTool: Result := 'tool';
-    cmUser: Result := 'user';
-    cmSystem: Result := 'system';
-    cmAssistant: Result := 'assistant';
-  else
-    raise Exception.Create(UnknowChatMessageRole);
-  end;
-end;
-
-function StringToMessageRole(const Role: string): TChatMessageRole;
-begin
-  if (Role = 'tool') then
-    Result := cmTool
-  else if (Role = 'user') then
-    Result := cmUser
-  else if (Role = 'system') then
-    Result := cmSystem
-  else if (Role = 'assistant') then
-    Result := cmAssistant
-  else
-    raise Exception.Create(UnknowChatMessageRole);
-end;
 
 end.

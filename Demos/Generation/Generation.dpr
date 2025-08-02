@@ -17,6 +17,7 @@ uses
   DecSoft.Ollama.Params.Types in '..\..\DecSoft.Ollama\DecSoft.Ollama.Params.Types.pas',
   DecSoft.Ollama.Request in '..\..\DecSoft.Ollama\DecSoft.Ollama.Request.pas',
   DecSoft.Ollama.Response.Types in '..\..\DecSoft.Ollama\DecSoft.Ollama.Response.Types.pas',
+  DecSoft.Ollama.Strings in '..\..\DecSoft.Ollama\DecSoft.Ollama.Strings.pas',
   DecSoft.Ollama.UTF8.Utils in '..\..\DecSoft.Ollama\DecSoft.Ollama.UTF8.Utils.pas';
 
 {$R *.res}

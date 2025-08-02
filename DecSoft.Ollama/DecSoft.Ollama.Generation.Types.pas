@@ -85,6 +85,7 @@ type
 implementation
 
 uses
+  DecSoft.Ollama.Strings,
   DecSoft.Ollama.Base64.Utils;
 
 { TGenerationParams }
@@ -94,7 +95,7 @@ begin
   if FileExists(FileName) then
     Self.Images := Self.Images + [FileName]
   else
-    raise Exception.CreateFmt('Missing file name: %s', [FileName]);
+    raise Exception.CreateFmt(FormatMissingFileName, [FileName]);
 end;
 
 procedure TGenerationParams.ClearImages();
@@ -182,8 +183,7 @@ begin
       end
       else
       begin
-        raise Exception.Create(
-         'The completion message images is set but some file do not exist.');
+        raise Exception.CreateFmt(FormatMissingFileName, [FileName]);
       end;
     end;
     if ImagesJSON.Count > 0 then
