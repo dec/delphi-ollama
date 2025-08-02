@@ -30,12 +30,6 @@ unit DecSoft.Ollama.Generation.Request;
 interface
 
 uses
-  System.JSON,
-  System.Classes,
-  System.SysUtils,
-  System.Net.URLClient,
-  System.Net.HttpClient,
-
   DecSoft.Ollama.Request,
   DecSoft.Ollama.Response.Types,
   DecSoft.Ollama.Generation.Types;
@@ -58,6 +52,10 @@ type
 implementation
 
 uses
+  System.JSON,
+  System.Classes,
+  System.SysUtils,
+
   DecSoft.Ollama.Params.Constants;
 
 { TGenerationRequest }

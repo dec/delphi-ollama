@@ -10,7 +10,6 @@ uses
   Vcl.ExtCtrls,
   Vcl.ComCtrls,
 
-  DecSoft.Ollama.Generation.Types,
   DecSoft.Ollama.Generation.Request,
   DecSoft.Ollama.Generation.Context;
 
@@ -43,7 +42,9 @@ implementation
 
 uses
   Vcl.Dialogs,
-  System.SysUtils;
+  System.SysUtils,
+
+  DecSoft.Ollama.Generation.Types;
 
 {$R *.dfm}
 

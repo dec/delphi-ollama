@@ -30,20 +30,19 @@ unit DecSoft.Ollama.Chat.Request;
 interface
 
 uses
-  System.JSON,
-  System.Classes,
-  System.SysUtils,
-  System.Net.URLClient,
-  System.Net.HttpClient,
-
   DecSoft.Ollama.Request,
   DecSoft.Ollama.Chat.Types,
+  DecSoft.Ollama.Chat.Tools,
   DecSoft.Ollama.Response.Types;
 
 type
   TChatRequest = class (TOllamaRequest)
   private
+    FStreamed: Boolean;
+    FChatParams: TChatParams;
     FChatResponseProc: TChatResponseProc;
+  private
+    function GetChatToolByName(const Name: string): TChatTool;
   private
     procedure ReceiveData(const Sender: TObject; AContentLength: Int64;
      AReadCount: Int64; var AAbort: Boolean);
@@ -57,7 +56,9 @@ type
 implementation
 
 uses
-  DIALOGS,
+  System.JSON,
+  System.Classes,
+  System.SysUtils,
 
   DecSoft.Ollama.Params.Types,
   DecSoft.Ollama.Params.Constants;
@@ -68,21 +69,20 @@ procedure TChatRequest.Run(ChatParamsProc: TChatParamsProc;
  ChatPartialResponseProc: TChatResponseProc;
   ErrorResponseProc: TErrorResponseProc);
 var
-  ChatParams: TChatParams;
   RequestStream: TStringStream;
 begin
 
-  ChatParams := DefaultChatParams;
-  ChatParams.Options := DefaultOptionsParam;
+  FChatParams := DefaultChatParams;
+  FChatParams.Options := DefaultOptionsParam;
 
   if Assigned(ChatParamsProc) then
-    ChatParamsProc(ChatParams);
+    ChatParamsProc(FChatParams);
 
   FErrorResponseProc := ErrorResponseProc;
   FChatResponseProc := ChatPartialResponseProc;
 
   RequestStream := TStringStream.Create(
-   ChatParams.ToString(), TEncoding.UTF8);
+   FChatParams.ToString(), TEncoding.UTF8);
   try
 
     Self.Post(Format('%schat', [FApiUrl]), RequestStream, Self.ReceiveData);
@@ -95,7 +95,15 @@ end;
 procedure TChatRequest.ReceiveData(const Sender: TObject;
   AContentLength, AReadCount: Int64; var AAbort: Boolean);
 var
+  PropValue: string;
+  ChatTool: TChatTool;
+  ToolCallDef: TJSONValue;
   ResponseJSON: TJSONValue;
+  ToolCallsArray: TJSONArray;
+  ToolCall: TResponseToolCall;
+  ChatToolParam: TChatToolParameter;
+  ChatToolParamProp: TChatToolParameterProperty;
+  ToolCallArgument: TResponseToolCallArgument;
   ResponseResult: TChatResponseResult;
 begin
 
@@ -151,12 +159,76 @@ begin
             ResponseJSON.GetValue<Int64>('prompt_eval_duration');
         end;
 
+        if ResponseJSON.TryGetValue<TJSONArray>
+         ('message.tool_calls', ToolCallsArray) then
+        begin
+
+          for ToolCallDef in ToolCallsArray do
+          begin
+
+            ChatTool := Self.GetChatToolByName(
+             ToolCallDef.GetValue<string>('function.name'));
+
+            if ChatTool.Name <> '' then
+            begin
+
+              ToolCall.Name := ToolCallDef.GetValue<string>('function.name');
+
+              for ChatToolParam in ChatTool.Parameters do
+              begin
+
+                for ChatToolParamProp in ChatToolParam.Properties do
+                begin
+
+                  if ToolCallDef.TryGetValue<string>(Format(
+                   'function.arguments.%s', [ChatToolParamProp.Name]),
+                    PropValue) then
+                  begin
+                    ToolCallArgument.Name := ChatToolParamProp.Name;
+                    ToolCallArgument.Value := ToolCallDef.GetValue<string>(
+                     Format('function.arguments.%s', [ChatToolParamProp.Name]));
+                  end
+                  else
+                  begin
+                    // This can help in the implementation: if there is no
+                    // parameter, we always set it, but with an empty value.
+                    ToolCallArgument.Name := ChatToolParamProp.Name;
+                    ToolCallArgument.Value := '';
+                  end;
+
+                  ToolCall.Arguments := ToolCall.Arguments + [ToolCallArgument];
+                end;
+              end;
+
+              ResponseResult.ToolCalls := ResponseResult.ToolCalls + [ToolCall];
+            end;
+          end;
+        end;
+
         FChatResponseProc(ResponseResult, FStopped);
       end;
     end;
 
   finally
     ResponseJSON.Free();
+  end;
+end;
+
+function TChatRequest.GetChatToolByName(const Name: string): TChatTool;
+var
+  ChatTool: TChatTool;
+begin
+  ChatTool.Name := '';
+
+  Result := ChatTool;
+
+  for ChatTool in FChatParams.Tools do
+  begin
+    if ChatTool.Name = Name then
+    begin
+      Result := ChatTool;
+      Break;
+    end;
   end;
 end;
 

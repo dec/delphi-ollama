@@ -46,8 +46,8 @@ complete: may some possible minor missing things can exists, but, probably
 right now is quite usable.
 
 * **Generate a chat completion:** The "Generate a chat completion" feature
-is almost complete too, but, right now the "tools" nor "tool_cals" are not
-implemented.
+is almost complete: may some possible minor missing things can exists, but,
+probably right now is quite usable.
 
 
 Is the library well documented?

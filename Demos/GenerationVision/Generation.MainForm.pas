@@ -4,13 +4,12 @@ interface
 
 uses
   Vcl.Forms,
+  Vcl.ComCtrls,
+  Vcl.ExtCtrls,
+  Vcl.Controls,
   Vcl.StdCtrls,
   System.Classes,
-  Vcl.Controls,
-  Vcl.ExtCtrls,
-  Vcl.ComCtrls,
 
-  DecSoft.Ollama.Generation.Types,
   DecSoft.Ollama.Generation.Request;
 
 type
@@ -41,7 +40,9 @@ implementation
 
 uses
   Vcl.Dialogs,
-  System.SysUtils;
+  System.SysUtils,
+
+  DecSoft.Ollama.Generation.Types;
 
 {$R *.dfm}
 

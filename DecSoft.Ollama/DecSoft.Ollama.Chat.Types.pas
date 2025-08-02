@@ -34,6 +34,7 @@ uses
   System.Classes,
   System.SysUtils,
 
+  DecSoft.Ollama.Chat.Tools,
   DecSoft.Ollama.Params.Types;
 
 type
@@ -42,6 +43,18 @@ type
   public
     Role: string;
     Content: string;
+  end;
+
+  TResponseToolCallArgument = record
+  public
+    Name: string;
+    Value: string;
+  end;
+
+  TResponseToolCall = record
+  public
+    Name: string;
+    Arguments: TArray<TResponseToolCallArgument>;
   end;
 
   TChatResponseResult = record
@@ -58,6 +71,7 @@ type
     DoneReason: string;
     Streamed: Boolean;
     Message: TResponseMessage;
+    ToolCalls: TArray<TResponseToolCall>;
     AsJSON: TJSONValue;
   end;
 
@@ -85,6 +99,7 @@ type
     Stream: Boolean;
     KeepAlive: string;
     Options: TOptionsParam;
+    Tools: TArray<TChatTool>;
     Messages: TArray<TChatMessage>;
   public
     procedure Clear();
@@ -94,11 +109,13 @@ type
   end;
 
   TChatParamsProc = reference to
-   procedure (var ChatRequest: TChatParams);
+   procedure (var ChatParams: TChatParams);
 
 implementation
 
 uses
+  DIALOGS,
+
   DecSoft.Ollama.Chat.Utils,
   DecSoft.Ollama.Base64.Utils;
 
@@ -184,23 +201,26 @@ end;
 
 function TChatParams.ToString(): string;
 var
+  ChatTool: TChatTool;
   StopSequence: string;
   ChatMessage: TChatMessage;
-  Options, JSONObject: TJSONObject;
-  JSONArray, StopSequences: TJSONArray;
+  Options, Params: TJSONObject;
+  Messages, Tools, StopSequences: TJSONArray;
 begin
-  JSONArray := TJSONArray.Create();
-  JSONObject := TJSONObject.Create();
+  Tools := TJSONArray.Create();
+  Messages := TJSONArray.Create();
+  Params := TJSONObject.Create();
   try
 
-    with JSONObject do
+    with Params do
     begin
       AddPair(TJSONPair.Create('model', Self.Model));
-      AddPair(TJSONPair.Create('stream', TJSONBool.Create(Self.Stream)));
+      AddPair(TJSONPair.Create('stream', TJSONBool.Create(
+       Self.Stream and (Length(Self.Tools) = 0))));
     end;
 
     if Self.KeepAlive <> '' then
-      JSONObject.AddPair(TJSONPair.Create('keep_alive', Self.KeepAlive));
+      Params.AddPair(TJSONPair.Create('keep_alive', Self.KeepAlive));
 
     Options := TJSONObject.Create();
 
@@ -232,19 +252,29 @@ begin
     Options.AddPair('top_p', TJSONNumber.Create(Self.Options.TopP));
     Options.AddPair('min_p', TJSONNumber.Create(Self.Options.MinP));
 
-    JSONObject.AddPair('options', Options);
+    Params.AddPair('options', Options);
 
     for ChatMessage in Self.Messages do
     begin
-      JSONArray.AddElement(ChatMessage.ToJSON());
+      Messages.AddElement(ChatMessage.ToJSON());
     end;
 
-    JSONObject.AddPair('messages', JSONArray);
+    Params.AddPair('messages', Messages);
 
-    Result := JSONObject.ToString();
+    if Length(Self.Tools) > 0 then
+    begin
+      for ChatTool in Self.Tools do
+      begin
+        Tools.AddElement(ChatTool.ToJSON());
+      end;
+
+      Params.AddPair('tools', Tools);
+    end;
+
+    Result := Params.ToString();
 
   finally
-    JSONObject.Free();
+    Params.Free();
   end;
 end;
 

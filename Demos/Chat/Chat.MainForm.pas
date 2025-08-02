@@ -10,7 +10,6 @@ uses
   Vcl.ExtCtrls,
   Vcl.ComCtrls,
 
-  DecSoft.Ollama.Chat.Types,
   DecSoft.Ollama.Chat.Request;
 
 type
@@ -41,7 +40,9 @@ implementation
 
 uses
   Vcl.Dialogs,
-  System.SysUtils;
+  System.SysUtils,
+
+  DecSoft.Ollama.Chat.Types;
 
 {$R *.dfm}
 

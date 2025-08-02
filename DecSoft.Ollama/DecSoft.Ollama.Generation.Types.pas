@@ -31,7 +31,6 @@ interface
 
 uses
   System.JSON,
-  System.Classes,
   System.SysUtils,
 
   DecSoft.Ollama.Params.Types,

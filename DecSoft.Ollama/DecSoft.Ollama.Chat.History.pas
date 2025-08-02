@@ -30,8 +30,7 @@ unit DecSoft.Ollama.Chat.History;
 interface
 
 uses
-  DecSoft.Ollama.Chat.Types,
-  DecSoft.Ollama.Chat.Request;
+  DecSoft.Ollama.Chat.Types;
 
 type
   TChatHistory = class(TObject)
@@ -41,7 +40,7 @@ type
     FMessages: TArray<TChatMessage>;
   public
     constructor Create(const AutoTrim: Boolean = True;
-     const MaxMessages: Integer = 25); reintroduce;
+     const MaxMessages: Integer = 50); reintroduce;
   public
     function GetMessages(): TArray<TChatMessage>;
     function AddMessage(const ChatMessage: TChatMessage): Integer;
@@ -54,7 +53,7 @@ implementation
 { TChatHistory }
 
 constructor TChatHistory.Create(const AutoTrim:
- Boolean = True; const MaxMessages: Integer = 25);
+ Boolean = True; const MaxMessages: Integer = 50);
 begin
   inherited Create();
   FMessages := [];
