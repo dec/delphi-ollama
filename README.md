@@ -82,7 +82,7 @@ so many, many thanks [@HemulGM](https://github.com/HemulGM) for that!
 MIT license
 -----------
 
-Copyright (c) 2025 DecSoft Utils - https://www.decsoftutils.com/
+Copyright (c) DecSoft Utils - https://www.decsoftutils.com/
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
