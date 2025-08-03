@@ -2,6 +2,7 @@
  MIT license
 
  Copyright (c) DecSoft Utils
+
  https://www.decsoftutils.com/
  https://github.com/dec/delphi-ollama
 
@@ -62,6 +63,7 @@ begin
   ResponseContent := TStringStream.Create();
   try
     Self.Get(Format('%stags', [FApiUrl]), ResponseContent);
+
     ResponseJSON := TJSONObject.ParseJSONValue(ResponseContent.DataString);
 
     try

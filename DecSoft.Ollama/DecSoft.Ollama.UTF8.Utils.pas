@@ -4,7 +4,6 @@
  Copyright (c) DecSoft Utils
 
  https://www.decsoftutils.com/
-
  https://github.com/dec/delphi-ollama
 
  Permission is hereby granted, free of charge, to any person obtaining a copy

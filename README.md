@@ -52,6 +52,8 @@ probably right now is quite usable.
 * **List local models:** The "List local models" feature is implemented but
 only returns the models names.
 
+* **List local models:** The "Version" request to get the Ollama version.
+
 
 Is the library well documented?
 -------------------------------

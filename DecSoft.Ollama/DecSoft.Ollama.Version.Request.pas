@@ -25,58 +25,63 @@
  SOFTWARE.
 *)
 
-unit DecSoft.Ollama.Generation.Context;
+unit DecSoft.Ollama.Version.Request;
 
 interface
 
-type
-  TArray<Int64> = array of Int64;
+uses
+  DecSoft.Ollama.Request,
+  DecSoft.Ollama.Version.Types;
 
 type
-  TGenerationContext = class(TObject)
-  private
-    FAutoTrim: Boolean;
-    FMaxContext: Int64;
-    FContext: TArray<Int64>;
+  TVersionRequest = class (TOllamaRequest)
   public
-    constructor Create(const AutoTrim: Boolean = True;
-     const MaxContext: Int64 = 2000); reintroduce;
-  public
-    function GetContext(): TArray<Int64>;
-    function AddContext(const Context: TArray<Int64>): Int64;
-  public
-    property AutoTrim: Boolean read FAutoTrim write FAutoTrim;
-    property MaxContext: Int64 read FMaxContext write FMaxContext;
+    procedure Run(VersionResponseProc: TVersionResponseProc);
   end;
 
 implementation
 
-{ TGenerationContext }
+uses
+  System.JSON,
+  System.Classes,
+  System.SysUtils,
 
-constructor TGenerationContext.Create(const AutoTrim:
- Boolean = True; const MaxContext: Int64 = 2000);
+  DecSoft.Ollama.Strings;
+
+{ TVersionRequest }
+
+procedure TVersionRequest.Run(VersionResponseProc: TVersionResponseProc);
+var
+  ResponseJSON: TJSONValue;
+  ResponseContent: TStringStream;
+  ResponseResult: TVersionResponseResult;
 begin
-  inherited Create();
-  FContext := [];
-  FAutoTrim := AutoTrim;
-  FMaxContext := MaxContext;
-end;
+  ResponseContent := TStringStream.Create();
+  try
+    Self.Get(Format('%sversion', [FApiUrl]), ResponseContent);
 
-function TGenerationContext.AddContext(const Context: TArray<Int64>): Int64;
-begin
-  FContext := FContext + Context;
+    ResponseJSON := TJSONObject.ParseJSONValue(ResponseContent.DataString);
 
-  if FAutoTrim and (Length(FContext) > FMaxContext) then
-  begin
-    Delete(FContext, 0, FMaxContext div 2);
+    try
+
+      if not Assigned(ResponseJSON) then
+      begin
+        raise Exception.CreateFmt(FormatUnexpectedResponse,
+         [ResponseContent.DataString]);
+      end;
+
+      ResponseResult.Version := ResponseJSON.GetValue<string>('version');
+
+      if Assigned(VersionResponseProc) then
+        VersionResponseProc(ResponseResult);
+
+    finally
+      ResponseJSON.Free();
+    end;
+
+  finally
+    ResponseContent.Free();
   end;
-
-  Result := Length(FContext);
-end;
-
-function TGenerationContext.GetContext(): TArray<Int64>;
-begin
-  Result := FContext;
 end;
 
 end.

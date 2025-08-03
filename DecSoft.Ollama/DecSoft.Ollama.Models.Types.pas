@@ -2,6 +2,7 @@
  MIT license
 
  Copyright (c) DecSoft Utils
+
  https://www.decsoftutils.com/
  https://github.com/dec/delphi-ollama
 

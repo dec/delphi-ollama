@@ -25,58 +25,20 @@
  SOFTWARE.
 *)
 
-unit DecSoft.Ollama.Generation.Context;
+unit DecSoft.Ollama.Version.Types;
 
 interface
 
 type
-  TArray<Int64> = array of Int64;
 
-type
-  TGenerationContext = class(TObject)
-  private
-    FAutoTrim: Boolean;
-    FMaxContext: Int64;
-    FContext: TArray<Int64>;
+  TVersionResponseResult = record
   public
-    constructor Create(const AutoTrim: Boolean = True;
-     const MaxContext: Int64 = 2000); reintroduce;
-  public
-    function GetContext(): TArray<Int64>;
-    function AddContext(const Context: TArray<Int64>): Int64;
-  public
-    property AutoTrim: Boolean read FAutoTrim write FAutoTrim;
-    property MaxContext: Int64 read FMaxContext write FMaxContext;
+    Version: string;
   end;
+
+  TVersionResponseProc = reference to
+   procedure (const Result: TVersionResponseResult);
 
 implementation
-
-{ TGenerationContext }
-
-constructor TGenerationContext.Create(const AutoTrim:
- Boolean = True; const MaxContext: Int64 = 2000);
-begin
-  inherited Create();
-  FContext := [];
-  FAutoTrim := AutoTrim;
-  FMaxContext := MaxContext;
-end;
-
-function TGenerationContext.AddContext(const Context: TArray<Int64>): Int64;
-begin
-  FContext := FContext + Context;
-
-  if FAutoTrim and (Length(FContext) > FMaxContext) then
-  begin
-    Delete(FContext, 0, FMaxContext div 2);
-  end;
-
-  Result := Length(FContext);
-end;
-
-function TGenerationContext.GetContext(): TArray<Int64>;
-begin
-  Result := FContext;
-end;
 
 end.
