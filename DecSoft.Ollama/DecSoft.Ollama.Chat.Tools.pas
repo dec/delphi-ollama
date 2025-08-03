@@ -38,6 +38,7 @@ type
     Name: string;
     Description: string;
     IsRequired: Boolean;
+    Enum: TArray<string>;
   end;
 
   TChatToolParameter = record
@@ -56,12 +57,16 @@ type
 
 implementation
 
+uses
+  DIALOGS;
+
 { TChatTool }
 
 function TChatTool.ToJSON(): TJSONObject;
 var
-  Required: TJSONArray;
+  PropEnumValue: string;
   ToolParam: TChatToolParameter;
+  Required, PropEnum: TJSONArray;
   ParamProp: TChatToolParameterProperty;
   Func, Params, Prop, Props: TJSONObject;
 begin
@@ -85,6 +90,18 @@ begin
 
       Prop.AddPair('type', 'string');
       Prop.AddPair('description', ParamProp.Description);
+
+      if Length(ParamProp.Enum) > 0 then
+      begin
+        PropEnum := TJSONArray.Create();
+
+        for PropEnumValue in ParamProp.Enum do
+        begin
+          PropEnum.Add(PropEnumValue);
+        end;
+
+        Prop.AddPair('enum', PropEnum);
+      end;
 
       Props.AddPair(ParamProp.Name, Prop);
 

@@ -79,6 +79,7 @@ begin
   ParamProp2.Name := 'TempDegree';
   ParamProp2.IsRequired := True;
   ParamProp2.Description := 'The format to return the weather in, e.g. "celsius" or "fahrenheit"';
+  ParamProp2.Enum := ['celsius', 'fahrenheit'];
 
   ToolParam.Properties := [ParamProp1, ParamProp2];
 
