@@ -33,22 +33,10 @@ uses
   System.JSON,
   System.Classes,
 
-  DecSoft.Ollama.Request;
+  DecSoft.Ollama.Request,
+  DecSoft.Ollama.Models.Types;
 
 type
-  TModel = record
-  public
-    Name: string;
-  end;
-
-  TModelsResponseResult = record
-  public
-    Models: TArray<TModel>;
-  end;
-
-  TModelsResponseProc = reference to
-   procedure (const Result: TModelsResponseResult);
-
   TModelsRequest = class (TOllamaRequest)
   public
     procedure Run(ModelsResponseProc: TModelsResponseProc);

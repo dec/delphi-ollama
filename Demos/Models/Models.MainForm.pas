@@ -28,8 +28,8 @@ uses
   Vcl.Dialogs,
   System.SysUtils,
 
-  DecSoft.Ollama.Models.Request,
-  DecSoft.Ollama.Generation.Types;
+  DecSoft.Ollama.Models.Types,
+  DecSoft.Ollama.Models.Request;
 
 {$R *.dfm}
 
