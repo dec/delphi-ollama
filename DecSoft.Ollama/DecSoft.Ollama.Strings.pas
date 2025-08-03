@@ -32,8 +32,9 @@ interface
 const
 
   FormatMissingFileName = 'Missing file name: %s';
-  UnknowChatMessageRole = 'Unknow chat message role.';
   FormatUnexpectedResponse = 'Unexpected response: %s';
+  UnknowChatMessageRole = 'Unknow chat message role';
+  FormatUnknowChatMessageRole = 'Unknow chat message role: %s';
 
 implementation
 

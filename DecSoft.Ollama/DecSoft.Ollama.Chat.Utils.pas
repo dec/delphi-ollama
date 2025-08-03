@@ -65,7 +65,7 @@ begin
   else if (Role = 'assistant') then
     Result := cmAssistant
   else
-    raise Exception.Create(UnknowChatMessageRole);
+    raise Exception.CreateFmt(FormatUnknowChatMessageRole, [Role])
 end;
 
 end.
