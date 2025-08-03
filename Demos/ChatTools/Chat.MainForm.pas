@@ -77,7 +77,7 @@ begin
   ParamProp1.Description := 'The location to get the weather for, e.g. Madrid, Spain';
 
   ParamProp2.Name := 'TempFormat';
-  ParamProp2.IsRequired := False;
+  ParamProp2.IsRequired := True;
   ParamProp2.Description := 'The format to return the weather in, e.g. "celsius" or "fahrenheit"';
 
   ToolParam.Properties := [ParamProp1, ParamProp2];
@@ -173,10 +173,9 @@ end;
 
 function TMainForm.GetCurrentWeather(const Location, TempFormat: string): string;
 begin
-  if TempFormat <> '' then
-    Result := Format('The weather in %s is 50º %s', [Location, TempFormat])
-  else
-   Result := Format('The weather in %s is 50º celsius', [Location]);
+  Result := Format(
+   'The user ask for the weather in location: "%s" and temp format: "%s"',
+    [Location, TempFormat]);
 end;
 
 initialization
