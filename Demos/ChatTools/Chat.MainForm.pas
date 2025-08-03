@@ -32,7 +32,7 @@ type
   private
     function GetChatTools(): TArray<TChatTool>;
     function GetCurrentWeatherChatTool(): TChatTool;
-    function GetCurrentWeather(const Location, TempFormat: string): string;
+    function GetCurrentWeather(const Location, TempDegree: string): string;
   end;
 
 var
@@ -76,7 +76,7 @@ begin
   ParamProp1.IsRequired := True;
   ParamProp1.Description := 'The location to get the weather for, e.g. Madrid, Spain';
 
-  ParamProp2.Name := 'TempFormat';
+  ParamProp2.Name := 'TempDegree';
   ParamProp2.IsRequired := True;
   ParamProp2.Description := 'The format to return the weather in, e.g. "celsius" or "fahrenheit"';
 
@@ -171,11 +171,11 @@ begin
   end;
 end;
 
-function TMainForm.GetCurrentWeather(const Location, TempFormat: string): string;
+function TMainForm.GetCurrentWeather(const Location, TempDegree: string): string;
 begin
   Result := Format(
-   'The user ask for the weather in location: "%s" and temp format: "%s"',
-    [Location, TempFormat]);
+   'The user ask for the weather in location: "%s" and degrees: "%s"',
+    [Location, TempDegree]);
 end;
 
 initialization
