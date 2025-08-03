@@ -50,7 +50,6 @@ type
     FStopped: Boolean;
     FStreamed: Boolean;
     FIsRunning: Boolean;
-    FHttpClient: THTTPClient;
     FPartialResponse: TStringStream;
     FCompleteResponse: TStringStream;
     FErrorResponseProc: TErrorResponseProc;
@@ -94,14 +93,12 @@ begin
   FResponseTimeout := 300;
   FConnectionTimeout := 5;
 
-  FHttpClient := THTTPClient.Create();
   FPartialResponse := TStringStream.Create('', TUTF8NotBoundEncoding.Create());
   FCompleteResponse := TStringStream.Create('', TUTF8NotBoundEncoding.Create());
 end;
 
 destructor TOllamaRequest.Destroy();
 begin
-  FHttpClient.Free();
   FPartialResponse.Free();
   FCompleteResponse.Free();
   inherited Destroy();
