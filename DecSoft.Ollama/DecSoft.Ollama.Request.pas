@@ -44,7 +44,7 @@ type
   private
     FSendTimeout: Integer;
     FConnectionTimeout: Integer;
-    FPartialResponseTimeout: Integer;
+    FResponseTimeout: Integer;
   protected
     FApiUrl: string;
     FStopped: Boolean;
@@ -66,7 +66,7 @@ type
     property ConnectionTimeout: Integer
      read FConnectionTimeout write FConnectionTimeout;
     property ResponseTimeout: Integer
-     read FPartialResponseTimeout write FPartialResponseTimeout;
+     read FResponseTimeout write FResponseTimeout;
   public
     procedure Stop();
   public
@@ -91,7 +91,7 @@ begin
   FStreamed := True;
   FIsRunning := False;
   FSendTimeout := 5;
-  FPartialResponseTimeout := 300;
+  FResponseTimeout := 300;
   FConnectionTimeout := 5;
 
   FHttpClient := THTTPClient.Create();
@@ -129,7 +129,7 @@ begin
   Headers := [TNetHeader.Create('Content-Type', 'application/json')];
 
   HttpClient.SendTimeout := FSendTimeout * 1000;
-  HttpClient.ResponseTimeout := FPartialResponseTimeout * 1000;
+  HttpClient.ResponseTimeout := FResponseTimeout * 1000;
   HttpClient.ConnectionTimeout := FConnectionTimeout * 1000;
 
   JSONRequestValue := TJSONObject.ParseJSONValue(JSONRequest.DataString);
