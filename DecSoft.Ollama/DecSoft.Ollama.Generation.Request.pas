@@ -1,8 +1,7 @@
 (*
  MIT license
 
- Copyright (c) 2025 DecSoft Utils
-
+ Copyright (c) DecSoft Utils
  https://www.decsoftutils.com/
  https://github.com/dec/delphi-ollama
 
@@ -43,8 +42,8 @@ type
      AReadCount: Int64; var AAbort: Boolean);
   public
     procedure Run(GenerationParamsProc: TGenerationParamsProc;
-     GenerationResponseProc: TGenerationResponseProc; ErrorResponseProc:
-      TErrorResponseProc);
+     GenerationResponseProc: TGenerationResponseProc; ResponseErrorProc:
+      TResponseErrorProc);
   public
     property Streamed: Boolean read FStreamed;
   end;
@@ -62,8 +61,8 @@ uses
 { TGenerationRequest }
 
 procedure TGenerationRequest.Run(GenerationParamsProc: TGenerationParamsProc;
- GenerationResponseProc: TGenerationResponseProc; ErrorResponseProc:
-  TErrorResponseProc);
+ GenerationResponseProc: TGenerationResponseProc; ResponseErrorProc:
+  TResponseErrorProc);
 var
   RequestStream: TStringStream;
   GenerationParams: TGenerationParams;
@@ -75,7 +74,7 @@ begin
   if Assigned(GenerationParamsProc) then
     GenerationParamsProc(GenerationParams);
 
-  FErrorResponseProc := ErrorResponseProc;
+  FResponseErrorProc := ResponseErrorProc;
   FGenerationlResponseProc := GenerationResponseProc;
 
   RequestStream := TStringStream.Create(

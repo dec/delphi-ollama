@@ -1,8 +1,7 @@
 (*
  MIT license
 
- Copyright (c) 2025 DecSoft Utils
-
+ Copyright (c) DecSoft Utils
  https://www.decsoftutils.com/
  https://github.com/dec/delphi-ollama
 
@@ -53,7 +52,7 @@ type
     FCustomHeaders: TNetHeaders;
     FPartialResponse: TStringStream;
     FCompleteResponse: TStringStream;
-    FErrorResponseProc: TErrorResponseProc;
+    FResponseErrorProc: TResponseErrorProc;
   protected
     procedure Get(const ApiMethodUrl: string; Response: TStringStream);
     procedure Post(const ApiMethodUrl: string; const JSONRequest:
@@ -163,8 +162,8 @@ begin
         try
           if ErrorJSON.TryGetValue('error', ErrorMsg) then
           begin
-            if Assigned(FErrorResponseProc) then
-              FErrorResponseProc(ErrorJSON.GetValue<string>('error'));
+            if Assigned(FResponseErrorProc) then
+              FResponseErrorProc(ErrorJSON.GetValue<string>('error'));
           end;
         finally
           ErrorJSON.Free();
@@ -174,8 +173,8 @@ begin
     except
       on E: Exception do
       begin
-        if Assigned(FErrorResponseProc) then
-          FErrorResponseProc(E.Message)
+        if Assigned(FResponseErrorProc) then
+          FResponseErrorProc(E.Message)
         else
           raise;
       end;

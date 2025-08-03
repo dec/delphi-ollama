@@ -1,8 +1,7 @@
 (*
  MIT license
 
- Copyright (c) 2025 DecSoft Utils
-
+ Copyright (c) DecSoft Utils
  https://www.decsoftutils.com/
  https://github.com/dec/delphi-ollama
 
@@ -47,7 +46,7 @@ type
      AReadCount: Int64; var AAbort: Boolean);
   public
     procedure Run(ChatParamsProc: TChatParamsProc; ChatPartialResponseProc:
-     TChatResponseProc; ErrorResponseProc: TErrorResponseProc);
+     TChatResponseProc; ResponseErrorProc: TResponseErrorProc);
   public
     property Streamed: Boolean read FStreamed;
   end;
@@ -67,7 +66,7 @@ uses
 
 procedure TChatRequest.Run(ChatParamsProc: TChatParamsProc;
  ChatPartialResponseProc: TChatResponseProc;
-  ErrorResponseProc: TErrorResponseProc);
+  ResponseErrorProc: TResponseErrorProc);
 var
   RequestStream: TStringStream;
 begin
@@ -78,7 +77,7 @@ begin
   if Assigned(ChatParamsProc) then
     ChatParamsProc(FChatParams);
   
-  FErrorResponseProc := ErrorResponseProc;
+  FResponseErrorProc := ResponseErrorProc;
   FChatResponseProc := ChatPartialResponseProc;
 
   RequestStream := TStringStream.Create(
