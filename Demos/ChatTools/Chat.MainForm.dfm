@@ -1,7 +1,7 @@
 object MainForm: TMainForm
   Left = 0
   Top = 0
-  Caption = 'DecSoft Ollama For Delphi Chat Demo'
+  Caption = 'DecSoft Ollama For Delphi Chat Tools Demo'
   ClientHeight = 634
   ClientWidth = 1004
   Color = clBtnFace

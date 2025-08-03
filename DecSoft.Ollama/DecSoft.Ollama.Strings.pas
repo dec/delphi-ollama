@@ -33,6 +33,7 @@ const
 
   FormatMissingFileName = 'Missing file name: %s';
   UnknowChatMessageRole = 'Unknow chat message role.';
+  FormatUnexpectedResponse = 'Unexpected response: %s';
 
 implementation
 

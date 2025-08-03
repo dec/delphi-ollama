@@ -56,6 +56,7 @@ uses
   System.Classes,
   System.SysUtils,
 
+  DecSoft.Ollama.Strings,
   DecSoft.Ollama.Params.Constants;
 
 { TGenerationRequest }
@@ -102,49 +103,52 @@ begin
   ResponseJSON := TJSONObject.ParseJSONValue(FPartialResponse.DataString);
 
   try
-    if Assigned(ResponseJSON) then
+
+    if not Assigned(ResponseJSON) then
+    begin
+      raise Exception.CreateFmt(FormatUnexpectedResponse,
+       [FPartialResponse.DataString]);
+    end;
+
+    ResponseResult.AsJSON := ResponseJSON;
+    ResponseResult.Streamed := FStreamed;
+    ResponseResult.Done := ResponseJSON.GetValue<Boolean>('done');
+    ResponseResult.Model := ResponseJSON.GetValue<string>('model');
+    ResponseResult.Response := ResponseJSON.GetValue<string>('response');
+    ResponseResult.CreatedAt := ResponseJSON.GetValue<string>('created_at');
+
+    FCompleteResponse.WriteString(ResponseResult.Response);
+
+    if FStreamed and not ResponseResult.Done and
+     Assigned(FGenerationlResponseProc)then
+    begin
+      FGenerationlResponseProc(ResponseResult, FStopped);
+      FPartialResponse.Clear();
+    end;
+
+    if ResponseResult.Done and Assigned(FGenerationlResponseProc) then
     begin
 
-      ResponseResult.AsJSON := ResponseJSON;
-      ResponseResult.Streamed := FStreamed;
-      ResponseResult.Done := ResponseJSON.GetValue<Boolean>('done');
-      ResponseResult.Model := ResponseJSON.GetValue<string>('model');
-      ResponseResult.Response := ResponseJSON.GetValue<string>('response');
-      ResponseResult.CreatedAt := ResponseJSON.GetValue<string>('created_at');
+      FCompleteResponse.Position := 0;
 
-      FCompleteResponse.WriteString(ResponseResult.Response);
-
-      if FStreamed and not ResponseResult.Done and
-       Assigned(FGenerationlResponseProc)then
+      with ResponseResult do
       begin
-        FGenerationlResponseProc(ResponseResult, FStopped);
-        FPartialResponse.Clear();
+        Response := ResponseResult.Response;
+        Context := ResponseJSON.GetValue<TArray<Int64>>('context');
+        TotalDuration := ResponseJSON.GetValue<Int64>('total_duration');
+        LoadDuration := ResponseJSON.GetValue<Int64>('load_duration');
+        EvalCount := ResponseJSON.GetValue<Int64>('eval_count');
+        EvalDuration := ResponseJSON.GetValue<Int64>('eval_duration');
+        DoneReason := ResponseJSON.GetValue<string>('done_reason');
+
+        PromptEvalCount :=
+          ResponseJSON.GetValue<Int64>('prompt_eval_count');
+
+        PromptEvalDuration :=
+          ResponseJSON.GetValue<Int64>('prompt_eval_duration');
       end;
 
-      if ResponseResult.Done and Assigned(FGenerationlResponseProc) then
-      begin
-
-        FCompleteResponse.Position := 0;
-
-        with ResponseResult do
-        begin
-          Response := ResponseResult.Response;
-          Context := ResponseJSON.GetValue<TArray<Int64>>('context');
-          TotalDuration := ResponseJSON.GetValue<Int64>('total_duration');
-          LoadDuration := ResponseJSON.GetValue<Int64>('load_duration');
-          EvalCount := ResponseJSON.GetValue<Int64>('eval_count');
-          EvalDuration := ResponseJSON.GetValue<Int64>('eval_duration');
-          DoneReason := ResponseJSON.GetValue<string>('done_reason');
-
-          PromptEvalCount :=
-            ResponseJSON.GetValue<Int64>('prompt_eval_count');
-
-          PromptEvalDuration :=
-            ResponseJSON.GetValue<Int64>('prompt_eval_duration');
-        end;
-
-        FGenerationlResponseProc(ResponseResult, FStopped);
-      end;
+      FGenerationlResponseProc(ResponseResult, FStopped);
     end;
 
   finally

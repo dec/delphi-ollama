@@ -54,6 +54,7 @@ type
     FCompleteResponse: TStringStream;
     FErrorResponseProc: TErrorResponseProc;
   protected
+    procedure Get(const ApiMethodUrl: string; Response: TStringStream);
     procedure Post(const ApiMethodUrl: string; const JSONRequest:
      TStringStream; ReceiveDataEvent: TReceiveDataEvent);
   public
@@ -102,6 +103,19 @@ begin
   FPartialResponse.Free();
   FCompleteResponse.Free();
   inherited Destroy();
+end;
+
+procedure TOllamaRequest.Get(const ApiMethodUrl: string;
+  Response: TStringStream);
+var
+  HttpClient: THttpClient;
+begin
+  HttpClient := THTTPClient.Create();
+  try
+    HttpClient.Get(ApiMethodUrl, Response);
+  finally
+    HttpClient.Free();
+  end;
 end;
 
 procedure TOllamaRequest.Stop();

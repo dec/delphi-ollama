@@ -59,6 +59,7 @@ uses
   System.Classes,
   System.SysUtils,
 
+  DecSoft.Ollama.Strings,
   DecSoft.Ollama.Params.Types,
   DecSoft.Ollama.Params.Constants;
 
@@ -114,98 +115,101 @@ begin
   ResponseJSON := TJSONObject.ParseJSONValue(FPartialResponse.DataString);
 
   try
-    if Assigned(ResponseJSON) then
+
+    if not Assigned(ResponseJSON) then
     begin
+      raise Exception.CreateFmt(FormatUnexpectedResponse,
+       [FPartialResponse.DataString]);
+    end;
+
+    with ResponseResult do
+    begin
+      AsJSON := ResponseJSON;
+      Streamed := FStreamed;
+      Done := ResponseJSON.GetValue<Boolean>('done');
+      Model := ResponseJSON.GetValue<string>('model');
+      Message.Role := ResponseJSON.GetValue<string>('message.role');
+      Message.Content := ResponseJSON.GetValue<string>('message.content');
+      CreatedAt := ResponseJSON.GetValue<string>('created_at');
+    end;
+
+    FCompleteResponse.WriteString(ResponseResult.Message.Content);
+
+    if FStreamed and not ResponseResult.Done and
+     Assigned(FChatResponseProc)then
+    begin
+      FChatResponseProc(ResponseResult, FStopped);
+      FPartialResponse.Clear();
+    end;
+
+    if ResponseResult.Done and Assigned(FChatResponseProc) then
+    begin
+
+      FCompleteResponse.Position := 0;
 
       with ResponseResult do
       begin
-        AsJSON := ResponseJSON;
-        Streamed := FStreamed;
-        Done := ResponseJSON.GetValue<Boolean>('done');
-        Model := ResponseJSON.GetValue<string>('model');
-        Message.Role := ResponseJSON.GetValue<string>('message.role');
-        Message.Content := ResponseJSON.GetValue<string>('message.content');
-        CreatedAt := ResponseJSON.GetValue<string>('created_at');
+        Message.Content := FCompleteResponse.DataString;
+        TotalDuration := ResponseJSON.GetValue<Int64>('total_duration');
+        LoadDuration := ResponseJSON.GetValue<Int64>('load_duration');
+        EvalCount := ResponseJSON.GetValue<Int64>('eval_count');
+        EvalDuration := ResponseJSON.GetValue<Int64>('eval_duration');
+        DoneReason := ResponseJSON.GetValue<string>('done_reason');
+
+        PromptEvalCount :=
+          ResponseJSON.GetValue<Int64>('prompt_eval_count');
+
+        PromptEvalDuration :=
+          ResponseJSON.GetValue<Int64>('prompt_eval_duration');
       end;
 
-      FCompleteResponse.WriteString(ResponseResult.Message.Content);
-      
-      if FStreamed and not ResponseResult.Done and
-       Assigned(FChatResponseProc)then
-      begin
-        FChatResponseProc(ResponseResult, FStopped);
-        FPartialResponse.Clear();
-      end;
-
-      if ResponseResult.Done and Assigned(FChatResponseProc) then
+      if ResponseJSON.TryGetValue<TJSONArray>
+       ('message.tool_calls', ToolCallsArray) then
       begin
 
-        FCompleteResponse.Position := 0;
-
-        with ResponseResult do
-        begin
-          Message.Content := FCompleteResponse.DataString;
-          TotalDuration := ResponseJSON.GetValue<Int64>('total_duration');
-          LoadDuration := ResponseJSON.GetValue<Int64>('load_duration');
-          EvalCount := ResponseJSON.GetValue<Int64>('eval_count');
-          EvalDuration := ResponseJSON.GetValue<Int64>('eval_duration');
-          DoneReason := ResponseJSON.GetValue<string>('done_reason');
-
-          PromptEvalCount :=
-            ResponseJSON.GetValue<Int64>('prompt_eval_count');
-
-          PromptEvalDuration :=
-            ResponseJSON.GetValue<Int64>('prompt_eval_duration');
-        end;
-
-        if ResponseJSON.TryGetValue<TJSONArray>
-         ('message.tool_calls', ToolCallsArray) then
+        for ToolCallDef in ToolCallsArray do
         begin
 
-          for ToolCallDef in ToolCallsArray do
+          ChatTool := Self.GetChatToolByName(
+           ToolCallDef.GetValue<string>('function.name'));
+
+          if ChatTool.Name <> '' then
           begin
 
-            ChatTool := Self.GetChatToolByName(
-             ToolCallDef.GetValue<string>('function.name'));
+            ToolCall.Name := ToolCallDef.GetValue<string>('function.name');
 
-            if ChatTool.Name <> '' then
+            for ChatToolParam in ChatTool.Parameters do
             begin
 
-              ToolCall.Name := ToolCallDef.GetValue<string>('function.name');
-
-              for ChatToolParam in ChatTool.Parameters do
+              for ChatToolParamProp in ChatToolParam.Properties do
               begin
 
-                for ChatToolParamProp in ChatToolParam.Properties do
+                if ToolCallDef.TryGetValue<string>(Format(
+                 'function.arguments.%s', [ChatToolParamProp.Name]),
+                  PropValue) then
                 begin
-
-                  if ToolCallDef.TryGetValue<string>(Format(
-                   'function.arguments.%s', [ChatToolParamProp.Name]),
-                    PropValue) then
-                  begin
-                    ToolCallArgument.Name := ChatToolParamProp.Name;
-                    ToolCallArgument.Value := ToolCallDef.GetValue<string>(
-                     Format('function.arguments.%s', [ChatToolParamProp.Name]));
-                  end
-                  else
-                  begin
-                    // This can help in the implementation: if there is no
-                    // parameter, we always set it, but with an empty value.
-                    ToolCallArgument.Name := ChatToolParamProp.Name;
-                    ToolCallArgument.Value := '';
-                  end;
-
-                  ToolCall.Arguments := ToolCall.Arguments + [ToolCallArgument];
+                  ToolCallArgument.Name := ChatToolParamProp.Name;
+                  ToolCallArgument.Value := ToolCallDef.GetValue<string>(
+                   Format('function.arguments.%s', [ChatToolParamProp.Name]));
+                end
+                else
+                begin
+                  // This can help in the implementation: if there is no
+                  // parameter, we always set it, but with an empty value.
+                  ToolCallArgument.Name := ChatToolParamProp.Name;
+                  ToolCallArgument.Value := '';
                 end;
-              end;
 
-              ResponseResult.ToolCalls := ResponseResult.ToolCalls + [ToolCall];
+                ToolCall.Arguments := ToolCall.Arguments + [ToolCallArgument];
+              end;
             end;
+
+            ResponseResult.ToolCalls := ResponseResult.ToolCalls + [ToolCall];
           end;
         end;
-
-        FChatResponseProc(ResponseResult, FStopped);
       end;
+
+      FChatResponseProc(ResponseResult, FStopped);
     end;
 
   finally

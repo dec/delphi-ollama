@@ -49,6 +49,9 @@ right now is quite usable.
 is almost complete: may some possible minor missing things can exists, but,
 probably right now is quite usable.
 
+* **List local models:** The "List local models" feature is implemented but
+only returns the models names.
+
 
 Is the library well documented?
 -------------------------------
