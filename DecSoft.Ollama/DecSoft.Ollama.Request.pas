@@ -50,6 +50,7 @@ type
     FStopped: Boolean;
     FStreamed: Boolean;
     FIsRunning: Boolean;
+    FCustomHeaders: TNetHeaders;
     FPartialResponse: TStringStream;
     FCompleteResponse: TStringStream;
     FErrorResponseProc: TErrorResponseProc;
@@ -58,7 +59,8 @@ type
     procedure Post(const ApiMethodUrl: string; const JSONRequest:
      TStringStream; ReceiveDataEvent: TReceiveDataEvent);
   public
-    constructor Create(const ApiUrl: string = OllamaDefaultApiUrl);
+    constructor Create(const ApiUrl: string = OllamaDefaultApiUrl;
+     const CustomHeaders: TNetHeaders = nil);
     destructor Destroy(); override;
   public
     property IsRunning: Boolean read FIsRunning;
@@ -83,7 +85,8 @@ uses
 
 { TOllamaRequest }
 
-constructor TOllamaRequest.Create(const ApiUrl: string = OllamaDefaultApiUrl);
+constructor TOllamaRequest.Create(const ApiUrl: string = OllamaDefaultApiUrl;
+ const CustomHeaders: TNetHeaders = nil);
 begin
   inherited Create();
   FApiUrl := ApiUrl;
@@ -93,6 +96,7 @@ begin
   FSendTimeout := 5;
   FResponseTimeout := 300;
   FConnectionTimeout := 5;
+  FCustomHeaders := CustomHeaders;
 
   FPartialResponse := TStringStream.Create('', TUTF8NotBoundEncoding.Create());
   FCompleteResponse := TStringStream.Create('', TUTF8NotBoundEncoding.Create());
@@ -112,7 +116,7 @@ var
 begin
   HttpClient := THTTPClient.Create();
   try
-    HttpClient.Get(ApiMethodUrl, Response);
+    HttpClient.Get(ApiMethodUrl, Response, FCustomHeaders);
   finally
     HttpClient.Free();
   end;
@@ -127,7 +131,6 @@ procedure TOllamaRequest.Post(const ApiMethodUrl: string; const
  JSONRequest: TStringStream; ReceiveDataEvent: TReceiveDataEvent);
 var
   ErrorMsg: string;
-  Headers: TNetHeaders;
   ErrorJSON: TJSONValue;
   HttpClient: THttpClient;
   JSONRequestValue: TJSONValue;
@@ -137,7 +140,6 @@ begin
   FIsRunning := True;
   FPartialResponse.Clear();
   HttpClient := THTTPClient.Create();
-  Headers := [TNetHeader.Create('Content-Type', 'application/json')];
 
   HttpClient.SendTimeout := FSendTimeout * 1000;
   HttpClient.ResponseTimeout := FResponseTimeout * 1000;
@@ -150,7 +152,8 @@ begin
 
   try
 
-    HttpClient.Post(ApiMethodUrl, JSONRequest, FPartialResponse, Headers);
+    HttpClient.Post(ApiMethodUrl, JSONRequest,
+     FPartialResponse, FCustomHeaders);
 
     try
 

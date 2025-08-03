@@ -117,10 +117,7 @@ begin
   try
 
     if not Assigned(ResponseJSON) then
-    begin
-      raise Exception.CreateFmt(FormatUnexpectedResponse,
-       [FPartialResponse.DataString]);
-    end;
+      Exit;
 
     with ResponseResult do
     begin
