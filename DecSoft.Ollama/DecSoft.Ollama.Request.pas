@@ -155,29 +155,17 @@ begin
     HttpClient.Post(ApiMethodUrl, JSONRequest,
      FPartialResponse, FCustomHeaders);
 
-    try
-
-      if (FPartialResponse.DataString <> '') and not FStopped then
-      begin
-        ErrorJSON := TJSONObject.ParseJSONValue(FPartialResponse.DataString);
-        try
-          if ErrorJSON.TryGetValue('error', ErrorMsg) then
-          begin
-            if Assigned(FResponseErrorProc) then
-              FResponseErrorProc(ErrorJSON.GetValue<string>('error'));
-          end;
-        finally
-          ErrorJSON.Free();
+    if (FPartialResponse.DataString <> '') and not FStopped then
+    begin
+      ErrorJSON := TJSONObject.ParseJSONValue(FPartialResponse.DataString);
+      try
+        if ErrorJSON.TryGetValue('error', ErrorMsg) then
+        begin
+          if Assigned(FResponseErrorProc) then
+            FResponseErrorProc(ErrorJSON.GetValue<string>('error'));
         end;
-      end;
-
-    except
-      on E: Exception do
-      begin
-        if Assigned(FResponseErrorProc) then
-          FResponseErrorProc(E.Message)
-        else
-          raise;
+      finally
+        ErrorJSON.Free();
       end;
     end;
 
