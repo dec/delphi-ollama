@@ -79,6 +79,7 @@ begin
       for ModelJSON in ModelsArray do
       begin
         Model.Name := ModelJSON.GetValue<string>('name');
+        Model.Model := ModelJSON.GetValue<string>('model');
 
         ResponseResult.Models := ResponseResult.Models + [Model];
       end;

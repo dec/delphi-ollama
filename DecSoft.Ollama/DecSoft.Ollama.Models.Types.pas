@@ -34,6 +34,7 @@ type
   TModel = record
   public
     Name: string;
+    Model: string;
   end;
 
   TModelsResponseResult = record

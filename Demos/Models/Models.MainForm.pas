@@ -56,7 +56,10 @@ begin
          else
          begin
            for Model in Result.Models do
-             ModelsMemo.Lines.Add(Model.Name);
+           begin
+             ModelsMemo.Lines.Add(Format('Name: %s - Model: %s',
+              [Model.Name, Model.Model]));
+           end;
          end;
        end);
 
