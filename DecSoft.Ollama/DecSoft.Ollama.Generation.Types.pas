@@ -43,6 +43,7 @@ type
     Model: string;
     Done: Boolean;
     Response: string;
+    Thinking: string;
     CreatedAt: string;
     TotalDuration: Int64;
     LoadDuration: Int64;
@@ -64,6 +65,7 @@ type
     Model: string;
     Prompt: string;
     Suffix: string;
+    Think: Boolean;
     Stream: Boolean;
     KeepAlive: string;
     Options: TOptionsParam;
@@ -128,6 +130,7 @@ begin
   Result.AddPair(TJSONPair.Create('model', Self.Model));
   Result.AddPair(TJSONPair.Create('prompt', Self.Prompt));
   Result.AddPair(TJSONPair.Create('suffix', Self.Suffix));
+  Result.AddPair(TJSONPair.Create('think', TJSONBool.Create(Self.Think)));
   Result.AddPair(TJSONPair.Create('format', Self.ResponseFormatToString()));
   Result.AddPair(TJSONPair.Create('stream', TJSONBool.Create(Self.Stream)));
 

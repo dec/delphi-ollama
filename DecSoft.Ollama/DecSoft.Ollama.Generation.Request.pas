@@ -91,6 +91,7 @@ end;
 procedure TGenerationRequest.ReceiveData(const Sender: TObject;
   AContentLength, AReadCount: Int64; var AAbort: Boolean);
 var
+  Thinking: string;
   ResponseJSON: TJSONValue;
   ResponseResult: TGenerationResponseResult;
 begin
@@ -112,7 +113,11 @@ begin
     ResponseResult.Done := ResponseJSON.GetValue<Boolean>('done');
     ResponseResult.Model := ResponseJSON.GetValue<string>('model');
     ResponseResult.Response := ResponseJSON.GetValue<string>('response');
+    ResponseResult.Response := ResponseJSON.GetValue<string>('response');
     ResponseResult.CreatedAt := ResponseJSON.GetValue<string>('created_at');
+
+    if ResponseJSON.TryGetValue<string>('thinking', Thinking) then
+      ResponseResult.Thinking := Thinking;
 
     FCompleteResponse.WriteString(ResponseResult.Response);
 

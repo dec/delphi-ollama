@@ -95,6 +95,7 @@ end;
 procedure TChatRequest.ReceiveData(const Sender: TObject;
   AContentLength, AReadCount: Int64; var AAbort: Boolean);
 var
+  Thinking: string;
   PropValue: string;
   ChatTool: TChatTool;
   ToolCallDef: TJSONValue;
@@ -111,7 +112,7 @@ begin
 
   if Trim(FPartialResponse.DataString) = '' then
     Exit;
-    
+
   ResponseJSON := TJSONObject.ParseJSONValue(FPartialResponse.DataString);
 
   try
@@ -128,6 +129,9 @@ begin
       Message.Role := ResponseJSON.GetValue<string>('message.role');
       Message.Content := ResponseJSON.GetValue<string>('message.content');
       CreatedAt := ResponseJSON.GetValue<string>('created_at');
+
+      if ResponseJSON.TryGetValue<string>('message.thinking', Thinking) then
+        Message.Thinking := Thinking;
     end;
 
     FCompleteResponse.WriteString(ResponseResult.Message.Content);

@@ -43,6 +43,7 @@ type
   public
     Role: string;
     Content: string;
+    Thinking: string;
   end;
 
   TResponseToolCallArgument = record
@@ -96,6 +97,7 @@ type
   TChatParams = record
   public
     Model: string;
+    Think: Boolean;
     Stream: Boolean;
     KeepAlive: string;
     Options: TOptionsParam;
@@ -212,6 +214,7 @@ begin
     with Params do
     begin
       AddPair(TJSONPair.Create('model', Self.Model));
+      AddPair(TJSONPair.Create('think', TJSONBool.Create(Self.Think)));
       AddPair(TJSONPair.Create('stream', TJSONBool.Create(Self.Stream)));
     end;
 

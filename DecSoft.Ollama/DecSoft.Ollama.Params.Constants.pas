@@ -56,6 +56,7 @@ const
 
   DefaultChatParams: TChatParams = (
     Model: 'gemma3';
+    Think: False;
     Stream: False;
     KeepAlive: '5m';
     Tools: [];
@@ -66,6 +67,7 @@ const
     Model: 'gemma3';
     Prompt: '';
     Suffix: '';
+    Think: False;
     Stream: False;
     KeepAlive: '5m';
     Images: [];
