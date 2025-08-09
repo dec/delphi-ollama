@@ -122,9 +122,9 @@ object MainForm: TMainForm
   object ThinkMemo: TMemo
     Left = 0
     Top = 0
-    Width = 1004
-    Height = 243
-    Align = alTop
+    Width = 425
+    Height = 478
+    Align = alLeft
     DoubleBuffered = True
     Font.Charset = ANSI_CHARSET
     Font.Color = clWindowText
@@ -138,10 +138,10 @@ object MainForm: TMainForm
     TabOrder = 1
   end
   object ResponseMemo: TMemo
-    Left = 0
-    Top = 243
-    Width = 1004
-    Height = 235
+    Left = 425
+    Top = 0
+    Width = 579
+    Height = 478
     Align = alClient
     DoubleBuffered = True
     Font.Charset = ANSI_CHARSET
@@ -154,5 +154,9 @@ object MainForm: TMainForm
     ReadOnly = True
     ScrollBars = ssVertical
     TabOrder = 2
+    ExplicitLeft = 0
+    ExplicitTop = 243
+    ExplicitWidth = 1004
+    ExplicitHeight = 235
   end
 end
