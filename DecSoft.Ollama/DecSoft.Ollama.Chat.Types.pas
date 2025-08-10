@@ -83,6 +83,7 @@ type
     Role: TChatMessageRole;
     Content: string;
     Images: TArray<TFileName>;
+    ToolName: string;
   public
     procedure ClearImages();
     function ToString(): string;
@@ -147,6 +148,9 @@ begin
   Result := TJSONObject.Create();
   Result.AddPair(TJSONPair.Create('role', Self.RoleToString()));
   Result.AddPair(TJSONPair.Create('content', Self.Content));
+
+  if Self.ToolName <> '' then
+    Result.AddPair(TJSONPair.Create('tool_name', Self.ToolName));
 
   if Length(Self.Images) > 0 then
   begin

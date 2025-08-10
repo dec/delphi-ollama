@@ -134,6 +134,52 @@ begin
         Message.Thinking := Thinking;
     end;
 
+    if ResponseJSON.TryGetValue<TJSONArray>
+     ('message.tool_calls', ToolCallsArray) then
+    begin
+
+      for ToolCallDef in ToolCallsArray do
+      begin
+
+        ChatTool := Self.GetChatToolByName(
+         ToolCallDef.GetValue<string>('function.name'));
+
+        if ChatTool.Name <> '' then
+        begin
+
+          ToolCall.Name := ToolCallDef.GetValue<string>('function.name');
+
+          for ChatToolParam in ChatTool.Parameters do
+          begin
+
+            for ChatToolParamProp in ChatToolParam.Properties do
+            begin
+
+              if ToolCallDef.TryGetValue<string>(Format(
+               'function.arguments.%s', [ChatToolParamProp.Name]),
+                PropValue) then
+              begin
+                ToolCallArgument.Name := ChatToolParamProp.Name;
+                ToolCallArgument.Value := ToolCallDef.GetValue<string>(
+                 Format('function.arguments.%s', [ChatToolParamProp.Name]));
+              end
+              else
+              begin
+                // This can help in the implementation: if there is no
+                // parameter, we always set it, but with an empty value.
+                ToolCallArgument.Name := ChatToolParamProp.Name;
+                ToolCallArgument.Value := '';
+              end;
+
+              ToolCall.Arguments := ToolCall.Arguments + [ToolCallArgument];
+            end;
+          end;
+
+          ResponseResult.ToolCalls := ResponseResult.ToolCalls + [ToolCall];
+        end;
+      end;
+    end;
+
     FCompleteResponse.WriteString(ResponseResult.Message.Content);
 
     if FStreamed and not ResponseResult.Done and
@@ -162,52 +208,6 @@ begin
 
         PromptEvalDuration :=
           ResponseJSON.GetValue<Int64>('prompt_eval_duration');
-      end;
-
-      if ResponseJSON.TryGetValue<TJSONArray>
-       ('message.tool_calls', ToolCallsArray) then
-      begin
-
-        for ToolCallDef in ToolCallsArray do
-        begin
-
-          ChatTool := Self.GetChatToolByName(
-           ToolCallDef.GetValue<string>('function.name'));
-
-          if ChatTool.Name <> '' then
-          begin
-
-            ToolCall.Name := ToolCallDef.GetValue<string>('function.name');
-
-            for ChatToolParam in ChatTool.Parameters do
-            begin
-
-              for ChatToolParamProp in ChatToolParam.Properties do
-              begin
-
-                if ToolCallDef.TryGetValue<string>(Format(
-                 'function.arguments.%s', [ChatToolParamProp.Name]),
-                  PropValue) then
-                begin
-                  ToolCallArgument.Name := ChatToolParamProp.Name;
-                  ToolCallArgument.Value := ToolCallDef.GetValue<string>(
-                   Format('function.arguments.%s', [ChatToolParamProp.Name]));
-                end
-                else
-                begin
-                  // This can help in the implementation: if there is no
-                  // parameter, we always set it, but with an empty value.
-                  ToolCallArgument.Name := ChatToolParamProp.Name;
-                  ToolCallArgument.Value := '';
-                end;
-
-                ToolCall.Arguments := ToolCall.Arguments + [ToolCallArgument];
-              end;
-            end;
-
-            ResponseResult.ToolCalls := ResponseResult.ToolCalls + [ToolCall];
-          end;
-        end;
       end;
 
       FChatResponseProc(ResponseResult, FStopped);

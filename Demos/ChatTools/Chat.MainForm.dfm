@@ -85,6 +85,28 @@ object MainForm: TMainForm
       Height = 19
       Panels = <>
     end
+    object StreamedCheckBox: TCheckBox
+      Left = 870
+      Top = 32
+      Width = 97
+      Height = 17
+      Anchors = [akTop, akRight]
+      Caption = 'Streamed response'
+      Checked = True
+      State = cbChecked
+      TabOrder = 4
+    end
+    object CancelButton: TButton
+      Left = 772
+      Top = 72
+      Width = 75
+      Height = 34
+      Anchors = [akTop, akRight]
+      Caption = 'Cancel'
+      Enabled = False
+      TabOrder = 5
+      OnClick = CancelButtonClick
+    end
   end
   object ResponseMemo: TMemo
     Left = 0

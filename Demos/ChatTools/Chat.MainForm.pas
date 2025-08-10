@@ -10,6 +10,7 @@ uses
   Vcl.ExtCtrls,
   Vcl.ComCtrls,
 
+  DecSoft.Ollama.Chat.Types,
   DecSoft.Ollama.Chat.Tools,
   DecSoft.Ollama.Chat.Request;
 
@@ -23,16 +24,21 @@ type
     PromptLabel: TLabel;
     StatusBar: TStatusBar;
     ChatButton: TButton;
+    StreamedCheckBox: TCheckBox;
+    CancelButton: TButton;
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure ChatButtonClick(Sender: TObject);
     procedure FormCloseQuery(Sender: TObject; var CanClose: Boolean);
+    procedure CancelButtonClick(Sender: TObject);
   private
     FRequest: TChatRequest;
   private
     function GetChatTools(): TArray<TChatTool>;
     function GetCurrentWeatherChatTool(): TChatTool;
     function GetCurrentWeather(const Location, TempDegree: string): string;
+  private
+    procedure MakeRequest(const ChatMessage: TChatMessage);
   end;
 
 var
@@ -42,9 +48,7 @@ implementation
 
 uses
   Vcl.Dialogs,
-  System.SysUtils,
-
-  DecSoft.Ollama.Chat.Types;
+  System.SysUtils;
 
 {$R *.dfm}
 
@@ -86,20 +90,10 @@ begin
   Result.Parameters := [ToolParam];
 end;
 
-function TMainForm.GetChatTools: TArray<TChatTool>;
-begin
-  Result := [Self.GetCurrentWeatherChatTool()];
-end;
-
-procedure TMainForm.ChatButtonClick(Sender: TObject);
+procedure TMainForm.MakeRequest(const ChatMessage: TChatMessage);
 begin
 
-  ResponseMemo.Lines.Add('');
-  ResponseMemo.Lines.Add(Format('User: %s', [PromptMemo.Text]));
-  ResponseMemo.Lines.Add('');
-  ResponseMemo.Lines.Add('Assistant:');
-  ResponseMemo.Text := Trim(ResponseMemo.Text);
-
+  CancelButton.Enabled := True;
   ChatButton.Enabled := False;
   Screen.Cursor := crHourGlass;
 
@@ -109,16 +103,11 @@ begin
       FRequest.Run(
 
         procedure (var Params: TChatParams)
-        var
-          ChatMessage: TChatMessage;
         begin
-          Params.Stream := False;
           Params.Model := ModelEdit.Text;
-
           Params.Tools := Self.GetChatTools();
+          Params.Stream := StreamedCheckBox.Checked;
 
-          ChatMessage.Role := cmUser;
-          ChatMessage.Content := PromptMemo.Text;
           PromptMemo.Clear();
 
           Params.AppendMessage(ChatMessage);
@@ -130,24 +119,22 @@ begin
         begin
           Application.ProcessMessages();
 
-          if Result.Done then
-          begin
-            if Length(Result.ToolCalls) > 0 then
-            begin
-              for ResponseToolCall in Result.ToolCalls do
-              begin
-                if ResponseToolCall.Name = 'GetCurrentWeather' then
-                begin
+          if Result.Streamed and not Result.Done then
+            ResponseMemo.Text := ResponseMemo.Text + Result.Message.Content;
 
-                  ResponseMemo.Text := ResponseMemo.Text + Self.GetCurrentWeather(
-                   ResponseToolCall.Arguments[0].Value,
-                   ResponseToolCall.Arguments[1].Value);
-                end;
-              end;
-            end
-            else
+          if not Result.Streamed and Result.Done then
+            ResponseMemo.Text := ResponseMemo.Text + Result.Message.Content;
+
+          if Length(Result.ToolCalls) > 0 then
+          begin
+            for ResponseToolCall in Result.ToolCalls do
             begin
-              ResponseMemo.Text := ResponseMemo.Text + Result.Message.Content;
+              if ResponseToolCall.Name = 'GetCurrentWeather' then
+              begin
+                Self.GetCurrentWeather(
+                 ResponseToolCall.Arguments[0].Value,
+                 ResponseToolCall.Arguments[1].Value);
+              end;
             end;
           end;
         end,
@@ -169,14 +156,43 @@ begin
 
     Screen.Cursor := crDefault;
     ChatButton.Enabled := True;
+    CancelButton.Enabled := False;
   end;
 end;
 
-function TMainForm.GetCurrentWeather(const Location, TempDegree: string): string;
+function TMainForm.GetChatTools: TArray<TChatTool>;
 begin
-  Result := Format(
-   'The user ask for the weather in location: "%s" and degrees: "%s"',
-    [Location, TempDegree]);
+  Result := [Self.GetCurrentWeatherChatTool()];
+end;
+
+procedure TMainForm.CancelButtonClick(Sender: TObject);
+begin
+  FRequest.Stop();
+end;
+
+procedure TMainForm.ChatButtonClick(Sender: TObject);
+var
+  ChatMessage: TChatMessage;
+begin
+  ResponseMemo.Lines.Add('');
+  ResponseMemo.Lines.Add(Format('User: %s', [PromptMemo.Text]));
+  ResponseMemo.Lines.Add('');
+  ResponseMemo.Lines.Add('Assistant:');
+  ResponseMemo.Text := Trim(ResponseMemo.Text);
+
+  ChatMessage.Role := cmUser;
+  ChatMessage.Content := PromptMemo.Text;
+  Self.MakeRequest(ChatMessage);
+end;
+
+function TMainForm.GetCurrentWeather(const Location, TempDegree: string): string;
+var
+  ChatMessage: TChatMessage;
+begin
+  ChatMessage.Role := cmTool;
+  ChatMessage.ToolName := 'GetCurrentWeather';
+  ChatMessage.Content := Format('Location: %s - Temperature: 30º %s - Precipitation: 10%', [Location, TempDegree]);
+  Self.MakeRequest(ChatMessage);
 end;
 
 initialization

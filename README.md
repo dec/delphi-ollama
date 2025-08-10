@@ -49,6 +49,9 @@ right now is quite usable.
 is almost complete: may some possible minor missing things can exists, but,
 probably right now is quite usable.
 
+* **Generate a chat completion with tools:** Tools: the support of tools
+are more or less good too, as you can see in the "ChatTools" demo.
+
 * **List local models:** The "List local models" feature is implemented but
 only returns the models names.
 
