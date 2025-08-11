@@ -42,6 +42,7 @@ type
     constructor Create(const AutoTrim: Boolean = True;
      const MaxMessages: Integer = 50); reintroduce;
   public
+    procedure ClearMessages();
     function GetMessages(): TArray<TChatMessage>;
     function AddMessage(const ChatMessage: TChatMessage): Integer;
   public
@@ -51,6 +52,11 @@ type
 implementation
 
 { TChatHistory }
+
+procedure TChatHistory.ClearMessages();
+begin
+  FMessages := [];
+end;
 
 constructor TChatHistory.Create(const AutoTrim:
  Boolean = True; const MaxMessages: Integer = 50);
