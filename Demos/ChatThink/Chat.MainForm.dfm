@@ -92,7 +92,7 @@ object MainForm: TMainForm
     object StreamedCheckBox: TCheckBox
       Left = 878
       Top = 56
-      Width = 97
+      Width = 115
       Height = 17
       Anchors = [akTop, akRight]
       Caption = 'Streamed response'
@@ -110,7 +110,7 @@ object MainForm: TMainForm
     object ThinkCheckBox: TCheckBox
       Left = 878
       Top = 33
-      Width = 97
+      Width = 115
       Height = 17
       Anchors = [akTop, akRight]
       Caption = 'Thinked response'
@@ -136,10 +136,6 @@ object MainForm: TMainForm
     ReadOnly = True
     ScrollBars = ssVertical
     TabOrder = 1
-    ExplicitLeft = 0
-    ExplicitTop = 243
-    ExplicitWidth = 1004
-    ExplicitHeight = 235
   end
   object ThinkMemo: TMemo
     Left = 0

@@ -94,10 +94,12 @@ begin
           Application.ProcessMessages();
 
           if Result.Streamed and not Result.Done then
-            ResponseMemo.Text := ResponseMemo.Text + Result.Response;
+            ResponseMemo.Text := ResponseMemo.Text +
+             StringReplace(Result.Response, #10, #13#10, [rfReplaceAll]);
 
           if not Result.Streamed and Result.Done then
-            ResponseMemo.Text := ResponseMemo.Text + Result.Response;
+            ResponseMemo.Text := ResponseMemo.Text +
+             StringReplace(Result.Response, #10, #13#10, [rfReplaceAll]);
         end,
 
         procedure (const Error: string)

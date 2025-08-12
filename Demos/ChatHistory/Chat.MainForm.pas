@@ -120,10 +120,12 @@ begin
           Application.ProcessMessages();
 
           if Result.Streamed and not Result.Done then
-            ResponseMemo.Text := ResponseMemo.Text + Result.Message.Content;
+            ResponseMemo.Text := ResponseMemo.Text +
+             StringReplace(Result.Message.Content, #10, #13#10, [rfReplaceAll]);;
 
           if not Result.Streamed and Result.Done then
-            ResponseMemo.Text := ResponseMemo.Text + Result.Message.Content;
+            ResponseMemo.Text := ResponseMemo.Text +
+             StringReplace(Result.Message.Content, #10, #13#10, [rfReplaceAll]);;
 
           if Result.Done then
           begin

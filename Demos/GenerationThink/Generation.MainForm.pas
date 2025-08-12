@@ -97,14 +97,20 @@ begin
 
           if Result.Streamed and not Result.Done then
           begin
-            ThinkMemo.Text := ThinkMemo.Text + Result.Thinking;
-            ResponseMemo.Text := ResponseMemo.Text + Result.Response;
+            ThinkMemo.Text := ThinkMemo.Text +
+              StringReplace(Result.Thinking, #10, #13#10, [rfReplaceAll]);
+
+            ResponseMemo.Text := ResponseMemo.Text +
+             StringReplace(Result.Response, #10, #13#10, [rfReplaceAll]);
           end;
 
           if not Result.Streamed and Result.Done then
           begin
-            ThinkMemo.Text := ThinkMemo.Text + Result.Thinking;
-            ResponseMemo.Text := ResponseMemo.Text + Result.Response;
+            ThinkMemo.Text := ThinkMemo.Text +
+             StringReplace(Result.Thinking, #10, #13#10, [rfReplaceAll]);
+
+            ResponseMemo.Text := ResponseMemo.Text +
+             StringReplace(Result.Response, #10, #13#10, [rfReplaceAll]);
           end;
         end,
 

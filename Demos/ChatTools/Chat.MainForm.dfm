@@ -88,7 +88,7 @@ object MainForm: TMainForm
     object StreamedCheckBox: TCheckBox
       Left = 870
       Top = 32
-      Width = 97
+      Width = 115
       Height = 17
       Anchors = [akTop, akRight]
       Caption = 'Streamed response'
