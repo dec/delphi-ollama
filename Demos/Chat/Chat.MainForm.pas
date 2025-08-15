@@ -92,7 +92,7 @@ begin
           Params.Model := ModelEdit.Text;
           Params.Stream := StreamedCheckBox.Checked;
 
-          ChatMessage.Role := cmUser;
+          ChatMessage.Role := cmrUser;
           ChatMessage.Content := PromptMemo.Text;
           PromptMemo.Clear();
 

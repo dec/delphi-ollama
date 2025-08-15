@@ -182,7 +182,7 @@ begin
   ResponseMemo.Lines.Add('Assistant:');
   ResponseMemo.Text := Trim(ResponseMemo.Text);
 
-  ChatMessage.Role := cmUser;
+  ChatMessage.Role := cmrUser;
   ChatMessage.Content := PromptMemo.Text;
   Self.MakeRequest(ChatMessage);
 end;
@@ -191,7 +191,7 @@ function TMainForm.GetCurrentWeather(const Location, TempDegree: string): string
 var
   ChatMessage: TChatMessage;
 begin
-  ChatMessage.Role := cmTool;
+  ChatMessage.Role := cmrTool;
   ChatMessage.ToolName := 'GetCurrentWeather';
   ChatMessage.Content := Format('Location: %s - Temperature: 30º %s - Precipitation: 10%', [Location, TempDegree]);
   Self.MakeRequest(ChatMessage);

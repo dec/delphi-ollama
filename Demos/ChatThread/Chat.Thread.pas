@@ -85,7 +85,7 @@ begin
         Params.Model := FModel;
         Params.Stream := True;
 
-        ChatMessage.Role := cmUser;
+        ChatMessage.Role := cmrUser;
         ChatMessage.Content := FPrompt;
 
         Params.AppendMessage(ChatMessage);

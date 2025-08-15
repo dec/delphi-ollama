@@ -76,7 +76,7 @@ type
     AsJSON: TJSONValue;
   end;
 
-  TChatMessageRole = (cmSystem, cmUser, cmAssistant, cmTool);
+  TChatMessageRole = (cmrSystem, cmrUser, cmrAssistant, cmrTool);
 
   TChatMessage = record
   public

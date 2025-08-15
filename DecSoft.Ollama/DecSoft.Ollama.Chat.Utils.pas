@@ -45,10 +45,10 @@ uses
 function MessageRoleToString(const Role: TChatMessageRole): string;
 begin
   case Role of
-    cmTool: Result := 'tool';
-    cmUser: Result := 'user';
-    cmSystem: Result := 'system';
-    cmAssistant: Result := 'assistant';
+    cmrTool: Result := 'tool';
+    cmrUser: Result := 'user';
+    cmrSystem: Result := 'system';
+    cmrAssistant: Result := 'assistant';
   else
     raise Exception.Create(UnknowChatMessageRole);
   end;
@@ -57,13 +57,13 @@ end;
 function StringToMessageRole(const Role: string): TChatMessageRole;
 begin
   if (Role = 'tool') then
-    Result := cmTool
+    Result := cmrTool
   else if (Role = 'user') then
-    Result := cmUser
+    Result := cmrUser
   else if (Role = 'system') then
-    Result := cmSystem
+    Result := cmrSystem
   else if (Role = 'assistant') then
-    Result := cmAssistant
+    Result := cmrAssistant
   else
     raise Exception.CreateFmt(FormatUnknowChatMessageRole, [Role])
 end;
