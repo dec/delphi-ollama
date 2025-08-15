@@ -67,6 +67,7 @@ const
     Model: 'gemma3';
     Prompt: '';
     Suffix: '';
+    System: '';
     Think: False;
     Stream: False;
     KeepAlive: '5m';

@@ -65,6 +65,7 @@ type
     Model: string;
     Prompt: string;
     Suffix: string;
+    System: string;
     Think: Boolean;
     Stream: Boolean;
     KeepAlive: string;
@@ -118,21 +119,29 @@ end;
 
 function TGenerationParams.ToJSON(): TJSONObject;
 var
-  StopSequence: string;
+  ContextNum: Int64;
   FileName: TFileName;
   Options: TJSONObject;
-  ContextNum: Int64;
   ContextArray: TJSONArray;
+  StopSequence, FormatStr: string;
   ImagesJSON, StopSequences: TJSONArray;
 begin
 
   Result := TJSONObject.Create();
   Result.AddPair(TJSONPair.Create('model', Self.Model));
   Result.AddPair(TJSONPair.Create('prompt', Self.Prompt));
-  Result.AddPair(TJSONPair.Create('suffix', Self.Suffix));
   Result.AddPair(TJSONPair.Create('think', TJSONBool.Create(Self.Think)));
-  Result.AddPair(TJSONPair.Create('format', Self.ResponseFormatToString()));
   Result.AddPair(TJSONPair.Create('stream', TJSONBool.Create(Self.Stream)));
+
+  if Self.Suffix <> '' then
+    Result.AddPair(TJSONPair.Create('suffix', Self.Suffix));
+
+  if Self.System <> '' then
+    Result.AddPair(TJSONPair.Create('system', Self.System));
+
+  FormatStr := Self.ResponseFormatToString();
+  if FormatStr <> '' then
+    Result.AddPair(TJSONPair.Create('format', FormatStr));
 
   ContextArray := TJSONArray.Create();
   for ContextNum in Self.Context do
