@@ -44,9 +44,11 @@ type
   public
     procedure ClearMessages();
     function GetMessages(): TArray<TChatMessage>;
+    procedure SetMessages(const Messages: TArray<TChatMessage>);
     function AddMessage(const ChatMessage: TChatMessage): Integer;
   public
     property AutoTrim: Boolean read FAutoTrim write FAutoTrim;
+    property MaxMessages: Integer read FMaxMessages write FMaxMessages;
   end;
 
 implementation
@@ -99,6 +101,11 @@ begin
 
     Result := Result + [ChatMessage];
   end;
+end;
+
+procedure TChatHistory.SetMessages(const Messages: TArray<TChatMessage>);
+begin
+  FMessages := Messages;
 end;
 
 end.
