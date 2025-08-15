@@ -136,12 +136,14 @@ begin
       with ResponseResult do
       begin
         Response := ResponseResult.Response;
-        Context := ResponseJSON.GetValue<TArray<Int64>>('context');
         TotalDuration := ResponseJSON.GetValue<Int64>('total_duration');
         LoadDuration := ResponseJSON.GetValue<Int64>('load_duration');
         EvalCount := ResponseJSON.GetValue<Int64>('eval_count');
         EvalDuration := ResponseJSON.GetValue<Int64>('eval_duration');
         DoneReason := ResponseJSON.GetValue<string>('done_reason');
+
+        // Because if the "raw" parameter is True there is no context
+        ResponseJSON.TryGetValue<TArray<Int64>>('context', Context);
 
         PromptEvalCount :=
           ResponseJSON.GetValue<Int64>('prompt_eval_count');
