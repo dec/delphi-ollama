@@ -62,6 +62,7 @@ type
 
   TGenerationParams = record
   public
+    Raw: Boolean;
     Model: string;
     Prompt: string;
     Suffix: string;
@@ -130,6 +131,7 @@ begin
   Result := TJSONObject.Create();
   Result.AddPair(TJSONPair.Create('model', Self.Model));
   Result.AddPair(TJSONPair.Create('prompt', Self.Prompt));
+  Result.AddPair(TJSONPair.Create('raw', TJSONBool.Create(Self.Raw)));
   Result.AddPair(TJSONPair.Create('think', TJSONBool.Create(Self.Think)));
   Result.AddPair(TJSONPair.Create('stream', TJSONBool.Create(Self.Stream)));
 

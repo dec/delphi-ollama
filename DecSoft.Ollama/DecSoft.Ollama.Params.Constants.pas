@@ -64,6 +64,7 @@ const
   );
 
   DefaultGenerationParams: TGenerationParams = (
+    Raw: False;
     Model: 'gemma3';
     Prompt: '';
     Suffix: '';
