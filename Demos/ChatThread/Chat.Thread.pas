@@ -6,6 +6,7 @@ uses
   System.Classes,
   System.SysUtils,
 
+  DecSoft.Ollama.Chat.Types,
   DecSoft.Ollama.Chat.Request;
 
 type
@@ -17,11 +18,10 @@ type
   TChatThread = class(TThread)
   private
     FError: string;
-    FModel: string;
-    FPrompt: string;
     FResponse: string;
     FException: Exception;
     FRequest: TChatRequest;
+    FChatParams: TChatParams;
   private
     FOnError: TChatErrorEvent;
     FOnFinish: TChatFinishEvent;
@@ -33,7 +33,7 @@ type
     procedure NotifyContent();
     procedure NotifyException();
   public
-    constructor Create(const Model, Prompt: string);
+    constructor Create(const ChatParams: TChatParams);
     destructor Destroy(); override;
   public
     procedure Execute(); override;
@@ -48,19 +48,15 @@ type
 
 implementation
 
-uses
-  DecSoft.Ollama.Chat.Types;
-
 { TChatThread }
 
-constructor TChatThread.Create(const Model, Prompt: string);
+constructor TChatThread.Create(const ChatParams: TChatParams);
 begin
   inherited Create(False);
 
-  FModel := Model;
-  FPrompt := Prompt;
   FError := EmptyStr;
   FResponse := EmptyStr;
+  FChatParams := ChatParams;
   FRequest := TChatRequest.Create();
 end;
 
@@ -79,28 +75,35 @@ begin
     FRequest.Run(
 
       procedure (var Params: TChatParams)
-      var
-        ChatMessage: TChatMessage;
       begin
-        Params.Model := FModel;
-        Params.Stream := True;
-
-        ChatMessage.Role := cmrUser;
-        ChatMessage.Content := FPrompt;
-
-        Params.AppendMessage(ChatMessage);
+        Params := FChatParams;
       end,
 
       procedure (const Result: TChatResponseResult; var Stop: Boolean)
       begin
-        if not Result.Done and not Self.Terminated then
+        if not Self.Terminated then
         begin
-          FResponse := Result.Message.Content;
-          Synchronize(Self.NotifyContent);
+          if Result.Streamed and not Result.Done then
+          begin
+            FResponse := Result.Message.Content;
+            Synchronize(Self.NotifyContent);
+          end;
+
+          if not Result.Streamed and Result.Done then
+          begin
+            FResponse := Result.Message.Content;
+            Synchronize(Self.NotifyContent);
+          end;
+
+          if Result.Done then
+          begin
+            Synchronize(Self.NotifyFinish);
+            Self.Terminate();
+          end;
         end
         else
         begin
-          Synchronize(Self.NotifyFinish);
+         Synchronize(Self.NotifyFinish);
         end;
       end,
 

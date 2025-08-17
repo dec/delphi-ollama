@@ -42,11 +42,17 @@ var
 implementation
 
 uses
-  Vcl.Dialogs;
+  Vcl.Dialogs,
+
+  DecSoft.Ollama.Chat.Types,
+  DecSoft.Ollama.Params.Constants;
 
 {$R *.dfm}
 
 procedure TMainForm.ChatButtonClick(Sender: TObject);
+var
+  ChatParams: TChatParams;
+  ChatMessage: TChatMessage;
 begin
   if Assigned(FChatThread) then
   begin
@@ -60,7 +66,17 @@ begin
   ChatButton.Enabled := False;
   CancelButton.Enabled := True;
 
-  FChatThread := TChatThread.Create(ModelEdit.Text, PromptMemo.Text);
+  ChatParams := DefaultChatParams;
+  ChatParams.Options := DefaultOptionsParam;
+
+  ChatMessage.Role := cmrUser;
+  ChatMessage.Content := PromptMemo.Text;
+
+  ChatParams.Stream := True;
+  ChatParams.Model := ModelEdit.Text;
+  ChatParams.AppendMessage(ChatMessage);
+
+  FChatThread := TChatThread.Create(ChatParams);
   FChatThread.OnError := Self.ChatError;
   FChatThread.OnFinish := Self.ChatFinish;
   FChatThread.OnContent := Self.ChatContent;
