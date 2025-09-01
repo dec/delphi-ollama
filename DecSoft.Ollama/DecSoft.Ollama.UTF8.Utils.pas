@@ -1,10 +1,12 @@
 (*
- MIT license
+ Delphi library for Ollama
 
  Copyright (c) DecSoft Utils
 
- https://www.decsoftutils.com/
- https://github.com/dec/delphi-ollama
+ https://www.decsoftutils.com/
+ https://github.com/dec/delphi-ollama
+
+ MIT license
 
  Permission is hereby granted, free of charge, to any person obtaining a copy
  of this software and associated documentation files (the "Software"), to deal
