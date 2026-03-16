@@ -11,8 +11,7 @@ intention to be exhaustively completed, even when I will try to add the
 missing features if my main job let me to do it.
 
 
-What Delphi version are supported?
-----------------------------------
+### What Delphi version are supported? ###
 
 I can't be sure what versions of Delphi are supported: I just can say that
 the library is developed with Delphi 10.4, so, probably can be used "as is"
@@ -21,8 +20,7 @@ cannot run "as is", but you are completely free to fork this repository
 and make the changes that you consider.
 
 
-What more I needed?
--------------------
+### What more I needed? ###
 
 You need to [download Ollama for Windows](https://ollama.com/download/windows),
 install it, pull some models and run it. The demos works by default with the
@@ -35,8 +33,7 @@ in principle, if everything is OK, and, you try to use this specific demo with a
 "non vision supported" model, the code must gracefully end with some kind of error.
 
 
-What features are included right now?
--------------------------------------
+### What features are included right now? ###
 
 Right now the library support the below features of the
 [Ollama API](https://ollama.readthedocs.io/en/api/):
@@ -58,8 +55,7 @@ only returns the models names.
 * **List local models:** The "Version" request to get the Ollama version.
 
 
-Is the library well documented?
--------------------------------
+### Is the library well documented? ###
 
 I am afraid that the answer is no. It's quite important that you read the
 [Ollama API documentation](https://ollama.readthedocs.io/en/api/) in order
@@ -71,8 +67,7 @@ Additionally, with the library various examples are included, so probably
 you can start from scratch without too much problems.
 
 
-Inspiration
------------
+### Inspiration ###
 
 I am very inspired by the great
 [Delphi OpenAI library](https://github.com/HemulGM/DelphiOpenAI) developed
@@ -84,8 +79,7 @@ the [Delphi OpenAI library](https://github.com/HemulGM/DelphiOpenAI),
 so many, many thanks [@HemulGM](https://github.com/HemulGM) for that!
 
 
-MIT license
------------
+### MIT license ###
 
 Copyright (c) DecSoft Utils - https://www.decsoftutils.com/
 
@@ -106,6 +100,7 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
+
 
 ### Donate ###
 
